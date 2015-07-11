@@ -1,7 +1,7 @@
 from logbook import Logger
 class Log():
 	"""Log module for Mirai"""
-	def __init__(self, connection = None):
+	def __init__(self):
 		self.Logger = Logger('Mirai')
 
 	def debug(self,text):

@@ -1,6 +1,5 @@
 import config,meta
 from log import Log 
-import pymysql.cursors
 import sys
 
 def main():
@@ -29,7 +28,15 @@ def main():
                 api_id = sys.argv[2];
                 Logger.info(u'尝试刷新' + api_id);
                 #未完成部分
+            else:
+                print('''
+                    Parameter Missed
 
+                    Usage:
+
+                    Main.py renew <api_id>
+                ''')
+                exit();
         elif (command == '-version' or command == '--version' or command == 'version'):
             print(meta.project + ' ' + meta.version);
             exit();
@@ -37,18 +44,13 @@ def main():
     try:
         with connection.cursor() as cursor:
             sql = 'SELECT * FROM data'
-            cursor.execute(sql)
+            cursor.execute(sql);
             result = cursor.fetchall()
-            print(result)
+            print(result);
 
     except:
         print('ERROR')
 if __name__ == "__main__":
-    connection = pymysql.connect(host = 'localhost', user = config.DATABASE_USER, passwd = config.DATABASE_PASSWORD, db = config.DATABASE_NAME)
     main();
-
-connection = pymysql.connect(host = 'localhost', user = config.DATABASE_USER, passwd = config.DATABASE_PASSWORD, db = config.DATABASE_NAME)
-
-
 
 
