@@ -16,14 +16,14 @@ class Spider():
 
 	def getPage(self,url):
 		try:
-			self.Logger.debug(u'试图抓取页面[' + url + ']')
+			self.Logger.debug(u'试图抓取页面[ URL = ' + url + ' ]')
 			req = request.Request(url)
 			req.add_header('User-Agent','Mirai/0.1 (https://github.com/Last-Order/Mirai-spider)')
 			response = request.urlopen(req);
-			self.Logger.debug(u'抓取页面[' + url + ']成功')
+			self.Logger.debug(u'抓取页面[ URL = ' + url + ' ]成功')
 			return response.read();
 		except Exception as e:
-			self.Logger.error('抓取页面[' + url + ']错误:' +  str(e));
+			self.Logger.error('抓取页面[ URL = ' + url + ' ]错误:' +  str(e));
 
 	def generateEventID(self,data):
 		m = hashlib.md5();
