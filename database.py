@@ -34,7 +34,6 @@ class Job(Base):
 	__tablename__ = 'job'
 	id = Column(Integer, primary_key=True)
 	api_id = Column(String)
-	params = Column(String)
 	timestamp = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"))
 
 
@@ -119,7 +118,7 @@ def getRecentJobs():
 		session.close()
 		return response
 	except Exception as e:
-		Logger.error('无法从数据库获得数据')
+		Logger.error('无法从数据库获得数据' + str(e))
 
 def deleteJob(job_id):
 	"""删除已经完成的任务"""

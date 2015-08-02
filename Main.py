@@ -4,7 +4,7 @@ import sys, time, socket, threading
 
 Logger = Log()
 
-def renewData(api_id, params = dict(), Logger = Logger):
+def renewData(api_id, Logger = Logger):
     try:
         spiderName = database.getSpiderName(api_id)
         Logger.info('获得映射 : [ ' + api_id + ' -> ' + spiderName + ' ] 尝试刷新')
@@ -65,10 +65,7 @@ def main():
                     Logger.info('共有 ' + str(len(recentJobs)) + ' 项任务需要执行')
                     for job in recentJobs:
                         Logger.info('正在进行抓取 [ 任务ID = ' + str(job.id) + ' ] 的抓取任务')
-                        if job.params != '{}' :
-                            renewData(job.api_id, job.params)
-                        else:
-                            renewData(job.api_id)
+                        renewData(job.api_id)
                         database.deleteJob(job.id)
                 else:
                     Logger.info('无任务呢')
