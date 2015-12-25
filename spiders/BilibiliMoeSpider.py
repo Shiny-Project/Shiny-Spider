@@ -22,18 +22,15 @@ class BilibiliMoeSpider(Spider):
         for node in response["female"] :
             female[node["id"]] = dict()
             for character in node["members"]:
-                #print(character["name"] + " : " + character["votes_count"])
                 female[node["id"]][character["id"]] = dict(name = character["name"], votes_count = character["votes_count"], bangumi = character["bangumi"])
         male = dict()
         for node in response["male"] :
             male[node["id"]] = dict()
             for character in node["members"]:
-                #print(character["name"] + " : " + character["votes_count"])
                 male[node["id"]][character["id"]] = dict(name = character["name"], votes_count = character["votes_count"], bangumi = character["bangumi"])
-        #print(male);
         data = dict(female = female, male = male)
-        print(data);
-        #result = self.createEvent(data)
+        #print(data);
+        result = self.createEvent(data)
 
 
 if __name__ == '__main__':
