@@ -1,7 +1,7 @@
 # Common Header
 import sys, time
 sys.path.append('..')
-from spider import Spider
+from Spider import Spider
 from bs4 import BeautifulSoup
 from urllib import request
 
