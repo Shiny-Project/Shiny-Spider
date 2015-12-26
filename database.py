@@ -38,7 +38,7 @@ class Job(Base):
 
 
 #初始化 连接数据库
-engine = create_engine('mysql+mysqlconnector://' + config.DATABASE_USER + ':' + config.DATABASE_PASSWORD + '@localhost' + '/' + config.DATABASE_NAME)
+engine = create_engine('mysql+pymysql://' + config.DATABASE_USER + ':' + config.DATABASE_PASSWORD + '@localhost' + '/' + config.DATABASE_NAME)
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
