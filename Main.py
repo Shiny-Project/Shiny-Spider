@@ -23,8 +23,6 @@ def main():
     # 初始化
     sys.path.append("spiders");
     Logger = Log();
-    print('================== Mirai =================')
-    print('_(:з」∠)_ MIRAI正在工作')
     if (len(sys.argv) == 1):
         # 如果是命令行调用 走下面的流程
         print('''
@@ -67,8 +65,12 @@ def main():
                     Logger.info('共有 ' + str(len(recentJobs)) + ' 项任务需要执行')
                     for job in recentJobs:
                         Logger.info('正在进行抓取 [ 任务ID = ' + str(job.id) + ' ] 的抓取任务')
-                        renewData(job.api_id)
-                        database.deleteJob(job.id)
+                        try:
+                            renewData(job.api_id)
+                            database.deleteJob(job.id)
+                        except Exception as e:
+                            print(str(e))
+                        
                 else:
                     Logger.info('无任务呢')
 
