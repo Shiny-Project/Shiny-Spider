@@ -23,6 +23,8 @@ def main():
     # 初始化
     sys.path.append("spiders");
     Logger = Log();
+    print('================== Mirai =================')
+    print('_(:з」∠)_ MIRAI正在工作')
     if (len(sys.argv) == 1):
         # 如果是命令行调用 走下面的流程
         print('''
