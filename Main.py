@@ -11,17 +11,17 @@ Logger = Log()
 def renew(spider_name):
     try:
         spider_path = database.get_spider_path(spider_name)
-        Logger.info('成功获得Spider:[' + spider_name + ']的路径')
+        Logger.info('成功获得 Spider : [ ' + spider_name + ' ]的路径 : [ ' + spider_path + ' ]')
 
         # 面向StackOverflow编程抄来的代码 根据路径导入包
         spec = importlib.util.spec_from_file_location("example", './spiders/' + spider_path + '.py')
         spider = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(spider)
 
-        getattr(spider, spider_name + 'Spider')().main() # 执行抓取逻辑
+        getattr(spider, spider_name + 'Spider')().main()  # 执行抓取逻辑
 
     except Exception as e:
-        Logger.error('抓取数据失败[ Spider Name = ' + spider_name + ' ] : ' + str(e))
+        Logger.error('抓取数据失败 [ Spider Name = ' + spider_name + ' ] : ' + str(e))
 
 
 def show_version():

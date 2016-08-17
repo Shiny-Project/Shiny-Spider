@@ -1,3 +1,5 @@
+import hashlib
+
 from log import Log
 import meta, config
 import json
@@ -21,7 +23,7 @@ class Data(Base):
     level = Column(Integer)
     hash = Column(String)
     publisher = Column(String)  # 其实是Spider名
-    createdAt = Column(TIMESTAMP)  # Sails自动维护
+    createdAt = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"))  # Sails自动维护
     updatedAt = Column(TIMESTAMP)  # Sails自动维护 下同
 
 
@@ -34,7 +36,7 @@ class Spider(Base):
     info = Column(String)
     trigger_count = Column(Integer)  # 调用次数统计
     trigger_time = Column(Integer)  # 上次调用时间
-    createdAt = Column(TIMESTAMP)
+    createdAt = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"))
     updatedAt = Column(TIMESTAMP)
 
 
@@ -44,14 +46,14 @@ class Job(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     info = Column(Text)
-    timestamp = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"))
-    createdAt = Column(TIMESTAMP)
+    createdAt = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"))
     updatedAt = Column(TIMESTAMP)
 
 
 # 初始化 连接数据库
-engine = create_engine(    'mysql+pymysql://' + config.DATABASE_USER + ':' + config.DATABASE_PASSWORD + '@localhost' + '/' + config.DATABASE_NAME)
-DBSession = sessionmaker(bind = engine)
+engine = create_engine(
+    'mysql+pymysql://' + config.DATABASE_USER + ':' + config.DATABASE_PASSWORD + '@localhost' + '/' + config.DATABASE_NAME)
+DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
@@ -63,6 +65,28 @@ def get_spider_path(spider_name):
         return response.path
     except Exception as e:
         Logger.error('无法从数据库取得数据' + str(e))
+
+
+def create_event(level, data, name):
+    m = hashlib.md5()
+    event = (str(data)).encode('utf-8')
+    m.update(event)
+    hash = m.hexdigest()
+
+    try:
+        response = session.query(Data).filter(Data.hash == hash).all()
+        if not response:
+            # 数据不重复 继续记录
+            new_event = Data(data=data, level=level, publisher=name, hash=hash)
+            session.add(new_event)
+            session.commit()
+            session.close()
+            Logger.info('[ Spider = ' + name + ' ] 新的数据已经记录 [ Hash = ' + hash + ' ]')
+        else:
+            Logger.warning('数据已经被记录过 [ Hash = ' + hash + ' ]')
+
+    except Exception as e:
+        Logger.error('无法记录数据' + str(e))
 
 #
 #
