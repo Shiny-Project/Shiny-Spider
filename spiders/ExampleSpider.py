@@ -1,14 +1,12 @@
 # Common Header
 import sys, time
-sys.path.append('..')
-from spider import Spider
+from .. import spider
 from bs4 import BeautifulSoup
-from urllib import request
 
 
-class ExampleSpider(Spider):
+class ExampleSpider(spider.Spider):
     """Spider描述"""
-    api_id = '00100020000010000'  # 声明API ID
+    name = 'Example'  # 声明Spider名
 
     def __init__(self):
         super(ExampleSpider, self).__init__()  # 仅修改类名，不要修改其他
