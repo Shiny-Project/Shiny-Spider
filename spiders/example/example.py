@@ -1,11 +1,11 @@
 import spider
 import json
 
-class ExampleSpider(spider.Spider):
 
+class ExampleSpider(spider.Spider):
     def __init__(self):
         super(ExampleSpider, self).__init__()  # 仅修改类名，不要修改其他
-        self.name = 'Example' # 声明Spider名
+        self.name = 'Example'  # 声明Spider名
 
     def main(self):
         """主抓取逻辑，只修改内容，不修改函数名"""
@@ -18,6 +18,7 @@ class ExampleSpider(spider.Spider):
     def check(self, time):
         """检查数据是否过期(optional)，只修改内容，不修改函数名，返回布尔型"""
         return True
+
 
 if __name__ == '__main__':
     pass

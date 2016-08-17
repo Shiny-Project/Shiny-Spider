@@ -20,6 +20,7 @@ def renew(spider_name):
 
         getattr(spider, spider_name + 'Spider')().main()  # 执行抓取逻辑
 
+        database.renew_trigger_time(spider_name)
     except Exception as e:
         Logger.error('抓取数据失败 [ Spider Name = ' + spider_name + ' ] : ' + str(e))
 
@@ -39,7 +40,9 @@ def main():
 
             Command:
 
-            renew <api_id> : renew the data of the API
+            renew <spider_name> : call a specified spider
+
+            ignite : start main progress
 
             Others:
 
