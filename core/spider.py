@@ -1,7 +1,8 @@
-import database
 from urllib import request
 
-from log import Log
+import core.database as database
+from core import utils
+from core.log import Log
 
 Logger = Log()
 
@@ -27,6 +28,9 @@ class Spider():
     def record(self, level, data):
         database.create_event(level, data, self.name)
 
+    @staticmethod
+    def check_expiration(timestamp, expiration):
+        return utils.get_time() - timestamp <= expiration
 
 
 

@@ -1,26 +1,41 @@
+import json
 import sys
-import importlib.util
 
-import database
-import meta
-from log import Log
+import core.database as database
+import core.meta as meta
+from core import utils
+from core.log import Log
 
 Logger = Log()
 
 
 def renew(spider_name):
     try:
-        spider_path = database.get_spider_path(spider_name)
-        Logger.info('成功获得 Spider : [ ' + spider_name + ' ]的路径 : [ ' + spider_path + ' ]')
+        spider_path, spider_trigger_time, spider_info = database.get_spider_info(spider_name)
+        Logger.debug('成功获得 Spider : [ ' + spider_name + ' ]的路径 : [ ' + spider_path + ' ]')
+        timestamp = utils.parse_time_string(spider_trigger_time)
 
-        # 面向StackOverflow编程抄来的代码 根据路径导入包
-        spec = importlib.util.spec_from_file_location("example", './spiders/' + spider_path + '.py')
-        spider = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(spider)
+        spider = utils.load_spider(spider_path)
+        try:
+            if getattr(spider, spider_name + 'Spider')().check(timestamp):
+                Logger.debug('[ Spider = ' + spider_name + ' ] 数据未过期')  # 数据没有过期 不执行
+            else:
+                getattr(spider, spider_name + 'Spider')().main()  # 数据过期 执行抓取逻辑
+                database.renew_trigger_time(spider_name)
+        except Exception as e:
+            if not spider_info:
+                Logger.error('[ Spider = ' + spider_name + ' ] 缺少有效期设置')
+            else:
+                info = json.loads(spider_info)
+                if not info['expires']:
+                    Logger.error('[ Spider = ' + spider_name + ' ] 缺少有效期设置')
+                else:
+                    if utils.get_time() - timestamp >= int(info['expires']):
+                        getattr(spider, spider_name + 'Spider')().main()  # 数据过期 执行抓取逻辑
+                        database.renew_trigger_time(spider_name)
+                    else:
+                        Logger.debug('[ Spider = ' + spider_name + ' ] 数据未过期')
 
-        getattr(spider, spider_name + 'Spider')().main()  # 执行抓取逻辑
-
-        database.renew_trigger_time(spider_name)
     except Exception as e:
         Logger.error('抓取数据失败 [ Spider Name = ' + spider_name + ' ] : ' + str(e))
 

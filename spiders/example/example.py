@@ -1,5 +1,6 @@
-import spider
 import json
+
+from core import spider
 
 
 class ExampleSpider(spider.Spider):
@@ -15,9 +16,9 @@ class ExampleSpider(spider.Spider):
 
         self.record(1, data)
 
-    def check(self, time):
+    def check(self, timestamp):
         """检查数据是否过期(optional)，只修改内容，不修改函数名，返回布尔型"""
-        return True
+        return self.check_expiration(timestamp, 60)
 
 
 if __name__ == '__main__':

@@ -1,13 +1,14 @@
-import datetime, time
-import hashlib
+import datetime, hashlib, time
+
+import core.config as config
+from core.log import Log
 
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.types import TIMESTAMP
 
-import config
-from log import Log
+
 
 # 创建ORM基类
 Base = declarative_base()
@@ -59,12 +60,12 @@ session = DBSession()
 
 
 
-def get_spider_path(spider_name):
+def get_spider_info(spider_name):
     """根据Spider的名字获取Spider的路径"""
     try:
         response = session.query(Spider).filter(Spider.name == spider_name).one()
         session.close()
-        return response.path
+        return response.path, response.trigger_time, response.info
     except Exception as e:
         Logger.error('无法从数据库取得数据' + str(e))
 
@@ -103,3 +104,4 @@ def renew_trigger_time(spider_name):
         Logger.debug('更新 [ Spider = ' + spider_name + ' ] 的调用次数和时间')
     except Exception as e:
         Logger.error('无法更新Spider的调用时间 [ Spider = ' + spider_name + ' ] ')
+

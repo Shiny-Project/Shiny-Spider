@@ -1,7 +1,7 @@
 # Common Header
 from bs4 import BeautifulSoup
 
-from .. import spider
+from core import spider
 
 
 class ExampleSpider(spider.Spider):
