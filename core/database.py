@@ -117,4 +117,4 @@ def get_spider_list():
     try:
         return session.query(Spider).all()
     except Exception as e:
-        Logger.error('无法获得 Spider 列表')
+        Logger.error('无法获得 Spider 列表' + str(e))
