@@ -4,8 +4,8 @@ from core import spider
 
 
 class ExampleSpider(spider.Spider):
-    def __init__(self):
-        super(ExampleSpider, self).__init__()  # 仅修改类名，不要修改其他
+    def __init__(self, socket):
+        super(ExampleSpider, self).__init__(socket)  # 仅修改类名，不要修改其他
         self.name = 'Example'  # 声明Spider名
 
     def main(self):
@@ -18,7 +18,7 @@ class ExampleSpider(spider.Spider):
 
     def check(self, timestamp):
         """检查数据是否过期(optional)，只修改内容，不修改函数名，返回布尔型"""
-        return self.check_expiration(timestamp, 60)
+        return self.check_expiration(timestamp, 5)
 
 
 if __name__ == '__main__':

@@ -5,8 +5,8 @@ import core.meta as meta
 from core import utils
 from core.log import Log
 
-
-
+from socketIO_client import SocketIO
+socket = SocketIO('localhost', 3737)
 Logger = Log()
 
 
@@ -21,7 +21,7 @@ def renew(spider_name):
             if getattr(spider, spider_name + 'Spider')().check(timestamp):
                 Logger.debug('[ Spider = ' + spider_name + ' ] 数据未过期')  # 数据没有过期 不执行
             else:
-                getattr(spider, spider_name + 'Spider')().main()  # 数据过期 执行抓取逻辑
+                getattr(spider, spider_name + 'Spider')(socket).main()  # 数据过期 执行抓取逻辑
                 database.renew_trigger_time(spider_name)
         except Exception as e:
             if not spider_info:
@@ -32,7 +32,7 @@ def renew(spider_name):
                     Logger.error('[ Spider = ' + spider_name + ' ] 缺少有效期设置')
                 else:
                     if utils.get_time() - timestamp >= int(info['expires']):
-                        getattr(spider, spider_name + 'Spider')().main()  # 数据过期 执行抓取逻辑
+                        getattr(spider, spider_name + 'Spider')(socket).main()  # 数据过期 执行抓取逻辑
                         database.renew_trigger_time(spider_name)
                     else:
                         Logger.debug('[ Spider = ' + spider_name + ' ] 数据未过期')

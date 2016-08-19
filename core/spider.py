@@ -13,8 +13,8 @@ class Spider():
     """抓取和处理数据"""
     name = 'Spider'
 
-    def __init__(self):
-        pass
+    def __init__(self, socket):
+        self.socket = socket
 
     def fetch(self, url):
         try:
@@ -28,8 +28,7 @@ class Spider():
             Logger.error('抓取页面 [ URL = ' + url + ' ]错误:' + str(e))
 
     def record(self, level, data):
-        socket = SocketIO('localhost', 3737)
-        database.create_event(level, data, self.name, socket)
+        database.create_event(level, data, self.name, self.socket)
 
     @staticmethod
     def check_expiration(timestamp, expiration):

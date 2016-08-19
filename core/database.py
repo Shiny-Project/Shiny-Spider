@@ -93,7 +93,7 @@ def create_event(level, data, name, socket):
             }))
             Logger.info('[ Spider = ' + name + ' ] 新的数据已经记录 [ Hash = ' + hash + ' ]')
         else:
-            Logger.warning('数据已经被记录过 [ Hash = ' + hash + ' ]')
+            Logger.debug('数据已经被记录过 [ Hash = ' + hash + ' ]')
 
     except Exception as e:
         Logger.error('无法记录数据' + str(e))
