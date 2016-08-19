@@ -4,6 +4,8 @@ import core.database as database
 from core import utils
 from core.log import Log
 
+from socketIO_client import SocketIO
+
 Logger = Log()
 
 
@@ -26,7 +28,8 @@ class Spider():
             Logger.error('抓取页面 [ URL = ' + url + ' ]错误:' + str(e))
 
     def record(self, level, data):
-        database.create_event(level, data, self.name)
+        socket = SocketIO('localhost', 3737)
+        database.create_event(level, data, self.name, socket)
 
     @staticmethod
     def check_expiration(timestamp, expiration):

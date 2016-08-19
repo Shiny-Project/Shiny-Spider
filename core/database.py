@@ -1,4 +1,5 @@
 import datetime, hashlib, time
+import json
 
 import core.config as config
 from core.log import Log
@@ -70,7 +71,7 @@ def get_spider_info(spider_name):
         Logger.error('无法从数据库取得数据' + str(e))
 
 
-def create_event(level, data, name):
+def create_event(level, data, name, socket):
     """记录数据"""
     m = hashlib.md5()
     event = (str(data)).encode('utf-8')
@@ -85,6 +86,11 @@ def create_event(level, data, name):
             session.add(new_event)
             session.commit()
             session.close()
+            socket.emit('event', json.dumps({
+                "spiderName": name,
+                "hash": hash,
+                "data": data
+            }))
             Logger.info('[ Spider = ' + name + ' ] 新的数据已经记录 [ Hash = ' + hash + ' ]')
         else:
             Logger.warning('数据已经被记录过 [ Hash = ' + hash + ' ]')
@@ -105,3 +111,9 @@ def renew_trigger_time(spider_name):
     except Exception as e:
         Logger.error('无法更新Spider的调用时间 [ Spider = ' + spider_name + ' ] ')
 
+
+def get_spider_list():
+    try:
+        return session.query(Spider).all()
+    except Exception as e:
+        Logger.error('无法获得 Spider 列表')

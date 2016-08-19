@@ -1,10 +1,11 @@
-import json
-import sys
+import json, sys, time
 
 import core.database as database
 import core.meta as meta
 from core import utils
 from core.log import Log
+
+
 
 Logger = Log()
 
@@ -83,9 +84,15 @@ def main():
             # 显示版本号
             show_version()
 
-        elif command == ['ignite', 'start', 'lift']:
+        elif command in ['ignite', 'start', 'lift']:
             # 主程序启动
-            pass
+            Logger.debug('监视流程启动')
+
+            Logger.debug('Socket Client连接至localhost:3737')
+            while True:
+                for spider in database.get_spider_list():
+                    renew(spider.name)
+                time.sleep(30)
 
     exit()
 
