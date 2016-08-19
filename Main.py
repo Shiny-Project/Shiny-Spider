@@ -4,9 +4,11 @@ import core.database as database
 import core.meta as meta
 from core import utils
 from core.log import Log
+from core import config
+
 
 from socketIO_client import SocketIO
-socket = SocketIO('localhost', 3737)
+socket = SocketIO(config.SOCKET_HOST, config.SOCKET_PORT)
 Logger = Log()
 
 

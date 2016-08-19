@@ -16,7 +16,7 @@ class ExampleSpider(spider.Spider):
             'link': 'http://wug.moe'
         }
 
-        self.record(1, data)
+        self.record(5, data)
 
     def check(self, timestamp):
         """检查数据是否过期(optional)，只修改内容，不修改函数名，返回布尔型"""

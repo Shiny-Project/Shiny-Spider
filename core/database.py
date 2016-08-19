@@ -87,6 +87,7 @@ def create_event(level, data, name, socket):
             session.commit()
             session.close()
             socket.emit('event', json.dumps({
+                "level": level,
                 "spiderName": name,
                 "hash": hash,
                 "data": data
