@@ -10,9 +10,11 @@ class ExampleSpider(spider.Spider):
 
     def main(self):
         """主抓取逻辑，只修改内容，不修改函数名"""
-        data = json.dumps({
-            'page': self.fetch('http://wug.moe/').decode('utf-8')
-        })
+        data = {
+            'title': 'WUG Countdown',
+            'content': self.fetch('http://wug.moe/').decode('utf-8'),
+            'link': 'http://wug.moe'
+        }
 
         self.record(1, data)
 

@@ -1,5 +1,5 @@
 from urllib import request
-
+import collections
 import core.database as database
 from core import utils
 from core.log import Log
@@ -22,13 +22,13 @@ class Spider():
             req = request.Request(url)
             req.add_header('User-Agent', 'Mirai/0.1 (https://github.com/Last-Order/Mirai-spider)')
             response = request.urlopen(req)
-            Logger.info('抓取页面 [ URL = ' + url + ' ]成功')
+            Logger.debug('抓取页面 [ URL = ' + url + ' ]成功')
             return response.read()
         except Exception as e:
             Logger.error('抓取页面 [ URL = ' + url + ' ]错误:' + str(e))
 
     def record(self, level, data):
-        database.create_event(level, data, self.name, self.socket)
+        database.create_event(level, collections.OrderedDict(sorted(data.items())), self.name, self.socket)
 
     @staticmethod
     def check_expiration(timestamp, expiration):

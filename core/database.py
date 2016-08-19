@@ -74,7 +74,7 @@ def get_spider_info(spider_name):
 def create_event(level, data, name, socket):
     """记录数据"""
     m = hashlib.md5()
-    event = (str(data)).encode('utf-8')
+    event = json.dumps(data).encode('utf-8')
     m.update(event)
     hash = m.hexdigest()
 
@@ -82,7 +82,7 @@ def create_event(level, data, name, socket):
         response = session.query(Data).filter(Data.hash == hash).all()
         if not response:
             # 数据不重复 继续记录
-            new_event = Data(data=data, level=level, publisher=name, hash=hash)
+            new_event = Data(data=json.dumps(data), level=level, publisher=name, hash=hash)
             session.add(new_event)
             session.commit()
             session.close()

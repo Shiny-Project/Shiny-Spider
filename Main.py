@@ -18,7 +18,7 @@ def renew(spider_name):
 
         spider = utils.load_spider(spider_path)
         try:
-            if getattr(spider, spider_name + 'Spider')().check(timestamp):
+            if getattr(spider, spider_name + 'Spider')(socket).check(timestamp):
                 Logger.debug('[ Spider = ' + spider_name + ' ] 数据未过期')  # 数据没有过期 不执行
             else:
                 getattr(spider, spider_name + 'Spider')(socket).main()  # 数据过期 执行抓取逻辑
