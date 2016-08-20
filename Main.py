@@ -8,11 +8,10 @@ from core import config
 
 
 from socketIO_client import SocketIO
-socket = SocketIO(config.SOCKET_HOST, config.SOCKET_PORT)
 Logger = Log()
 
 
-def renew(spider_name):
+def renew(spider_name, socket):
     try:
         spider_path, spider_trigger_time, spider_info = database.get_spider_info(spider_name)
         Logger.debug('成功获得 Spider : [ ' + spider_name + ' ]的路径 : [ ' + spider_path + ' ]')
@@ -70,9 +69,11 @@ def main():
         # 命令行调用刷新API数据
         command = sys.argv[1]
         if command in ['renew']:
+            socket = SocketIO(config.SOCKET_HOST, config.SOCKET_PORT)
+            Logger.debug('Socket Client连接至localhost:3737')
             if len(sys.argv) >= 3:
                 spider_name = sys.argv[2]
-                renew(spider_name)
+                renew(spider_name, socket)
             else:
                 # 参数缺失
                 print('''
@@ -89,11 +90,15 @@ def main():
         elif command in ['ignite', 'start', 'lift']:
             # 主程序启动
             Logger.debug('监视流程启动')
-
+            socket = SocketIO(config.SOCKET_HOST, config.SOCKET_PORT)
             Logger.debug('Socket Client连接至localhost:3737')
             while True:
-                for spider in database.get_spider_list():
-                    renew(spider.name)
+                list = database.get_spider_list()
+                if list:
+                    for spider in list:
+                        renew(spider.name, socket)
+                else:
+                    Logger.warning('没有已经定义的Spider')
                 time.sleep(30)
 
     exit()

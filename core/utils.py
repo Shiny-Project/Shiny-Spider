@@ -11,7 +11,11 @@ def load_spider(path):
 
 
 def parse_time_string(time_string):
-    return int(time.mktime(time_string.timetuple()))
+    try:
+        timestamp = int(time.mktime(time_string.timetuple()))
+        return timestamp
+    except Exception as e:
+        return 0
 
 
 def get_time():
