@@ -16,7 +16,6 @@ def renew(spider_name, socket):
         spider_path, spider_trigger_time, spider_info = database.get_spider_info(spider_name)
         Logger.debug('成功获得 Spider : [ ' + spider_name + ' ]的路径 : [ ' + spider_path + ' ]')
         timestamp = utils.parse_time_string(spider_trigger_time)
-
         spider = utils.load_spider(spider_path)
         try:
             if getattr(spider, spider_name + 'Spider')(socket).check(timestamp):

@@ -28,7 +28,7 @@ class Spider():
             Logger.error('抓取页面 [ URL = ' + url + ' ]错误:' + str(e))
 
     def record(self, level, data):
-        if (data['hash']):
+        if 'hash' in data:
             database.create_event(level, collections.OrderedDict(sorted(data.items())), self.name, data['hash'], self.socket)
         else:
             database.create_event(level, collections.OrderedDict(sorted(data.items())), self.name, None, self.socket)
