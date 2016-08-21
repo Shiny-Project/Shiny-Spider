@@ -25,6 +25,7 @@ def renew(spider_name, socket):
                 getattr(spider, spider_name + 'Spider')(socket).main()  # 数据过期 执行抓取逻辑
                 database.renew_trigger_time(spider_name)
         except Exception as e:
+            print(e)
             if not spider_info:
                 Logger.error('[ Spider = ' + spider_name + ' ] 缺少有效期设置')
             else:

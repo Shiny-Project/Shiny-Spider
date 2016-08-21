@@ -71,12 +71,13 @@ def get_spider_info(spider_name):
         Logger.error('无法从数据库取得数据' + str(e))
 
 
-def create_event(level, data, name, socket):
+def create_event(level, data, name, hash, socket):
     """记录数据"""
-    m = hashlib.md5()
-    event = json.dumps(data).encode('utf-8')
-    m.update(event)
-    hash = m.hexdigest()
+    if not hash:
+        m = hashlib.md5()
+        event = json.dumps(data).encode('utf-8')
+        m.update(event)
+        hash = m.hexdigest()
 
     try:
         response = session.query(Data).filter(Data.hash == hash).all()
