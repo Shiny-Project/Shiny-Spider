@@ -9,7 +9,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.types import TIMESTAMP
 
+import Shiny
 
+# Shiny SDK
+shiny = Shiny.Shiny(config.API_KEY, config.API_SECRET_KEY)
 
 # 创建ORM基类
 Base = declarative_base()
@@ -60,7 +63,6 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
-
 def get_spider_info(spider_name):
     """根据Spider的名字获取Spider的路径"""
     try:
@@ -87,12 +89,16 @@ def create_event(level, data, name, hash, socket):
             session.add(new_event)
             session.commit()
             session.close()
-            socket.emit('event', json.dumps({
-                "level": level,
-                "spiderName": name,
-                "hash": hash,
-                "data": data
-            }))
+            try:
+                shiny.add(name, level, data, hash=hash)
+            except Exception as e:
+                Logger.error('无法向Shiny提交数据')
+            # socket.emit('event', json.dumps({
+            #     "level": level,
+            #     "spiderName": name,
+            #     "hash": hash,
+            #     "data": data
+            # }))
             Logger.info('[ Spider = ' + name + ' ] 新的数据已经记录 [ Hash = ' + hash + ' ]')
         else:
             Logger.debug('数据已经被记录过 [ Hash = ' + hash + ' ]')
