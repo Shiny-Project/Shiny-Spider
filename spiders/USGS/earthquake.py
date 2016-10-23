@@ -3,8 +3,8 @@ from bs4 import BeautifulSoup
 
 
 class USGSEarthquakeSpider(spider.Spider):
-    def __init__(self, socket):
-        super(USGSEarthquakeSpider, self).__init__(socket)  # 仅修改类名，不要修改其他
+    def __init__(self):
+        super(USGSEarthquakeSpider, self).__init__()  # 仅修改类名，不要修改其他
         self.name = 'USGSEarthquake'  # 声明Spider名，要和类名里的一样
 
     def main(self):

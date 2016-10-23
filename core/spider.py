@@ -4,7 +4,6 @@ import core.database as database
 from core import utils
 from core.log import Log
 
-from socketIO_client import SocketIO
 
 Logger = Log()
 
@@ -12,9 +11,6 @@ Logger = Log()
 class Spider():
     """抓取和处理数据"""
     name = 'Spider'
-
-    def __init__(self, socket):
-        self.socket = socket
 
     def fetch(self, url):
         try:
@@ -29,14 +25,13 @@ class Spider():
 
     def record(self, level, data):
         if 'hash' in data:
-            database.create_event(level, collections.OrderedDict(sorted(data.items())), self.name, data['hash'], self.socket)
+            database.create_event(level, collections.OrderedDict(sorted(data.items())), self.name, data['hash'])
         else:
-            database.create_event(level, collections.OrderedDict(sorted(data.items())), self.name, None, self.socket)
+            database.create_event(level, collections.OrderedDict(sorted(data.items())), self.name, None)
 
     @staticmethod
     def check_expiration(timestamp, expiration):
         return utils.get_time() - timestamp <= expiration
-
 
 
 if __name__ == '__main__':

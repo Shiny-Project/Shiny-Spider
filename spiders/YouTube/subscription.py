@@ -3,8 +3,8 @@ from bs4 import BeautifulSoup
 
 
 class YouTubeRSSSpider(spider.Spider):
-    def __init__(self, socket):
-        super(YouTubeRSSSpider, self).__init__(socket)  # 仅修改类名，不要修改其他
+    def __init__(self):
+        super(YouTubeRSSSpider, self).__init__()  # 仅修改类名，不要修改其他
         self.name = 'YouTubeRSS'  # 声明Spider名，要和类名里的一样
 
     def main(self):

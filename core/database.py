@@ -73,7 +73,7 @@ def get_spider_info(spider_name):
         Logger.error('无法从数据库取得数据' + str(e))
 
 
-def create_event(level, data, name, hash, socket):
+def create_event(level, data, name, hash):
     """记录数据"""
     if not hash:
         m = hashlib.md5()
@@ -82,26 +82,22 @@ def create_event(level, data, name, hash, socket):
         hash = m.hexdigest()
 
     try:
-        response = session.query(Data).filter(Data.hash == hash).all()
-        if not response:
-            # 数据不重复 继续记录
-            new_event = Data(data=json.dumps(data), level=level, publisher=name, hash=hash)
-            session.add(new_event)
-            session.commit()
-            session.close()
-            try:
-                shiny.add(name, level, data, hash=hash)
-            except Exception as e:
-                Logger.error('无法向Shiny提交数据')
-            # socket.emit('event', json.dumps({
-            #     "level": level,
-            #     "spiderName": name,
-            #     "hash": hash,
-            #     "data": data
-            # }))
-            Logger.info('[ Spider = ' + name + ' ] 新的数据已经记录 [ Hash = ' + hash + ' ]')
-        else:
-            Logger.debug('数据已经被记录过 [ Hash = ' + hash + ' ]')
+        # 数据不重复 继续记录
+        new_event = Data(data=json.dumps(data), level=level, publisher=name, hash=hash)
+        session.add(new_event)
+        session.commit()
+        session.close()
+        try:
+            shiny.add(name, level, data, hash=hash)
+        except Shiny.ShinyError as e:
+            Logger.error('无法向Shiny提交数据:' + str(e))
+        # socket.emit('event', json.dumps({
+        #     "level": level,
+        #     "spiderName": name,
+        #     "hash": hash,
+        #     "data": data
+        # }))
+        Logger.info('[ Spider = ' + name + ' ] 新的数据已经记录 [ Hash = ' + hash + ' ]')
 
     except Exception as e:
         Logger.error('无法记录数据' + str(e))
