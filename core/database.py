@@ -82,11 +82,6 @@ def create_event(level, data, name, hash):
         hash = m.hexdigest()
 
     try:
-        # 数据不重复 继续记录
-        new_event = Data(data=json.dumps(data), level=level, publisher=name, hash=hash)
-        session.add(new_event)
-        session.commit()
-        session.close()
         try:
             shiny.add(name, level, data, hash=hash)
         except Shiny.ShinyError as e:
