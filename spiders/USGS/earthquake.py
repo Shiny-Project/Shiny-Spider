@@ -15,8 +15,8 @@ class USGSEarthquakeSpider(spider.Spider):
         if latest:
             latest = latest[0]
             link = latest.link.get('href')
-            title = latest.title.get_text()
-            content = latest.summary.get_text()
+            title = "USGS地震速报"
+            content = latest.title.get_text()
             self.record(3, {
                 "title": title,
                 "link": link,
