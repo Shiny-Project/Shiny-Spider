@@ -1,6 +1,6 @@
 from core import spider
 from bs4 import BeautifulSoup
-
+import time
 
 class YouTubeRSSSpider(spider.Spider):
     def __init__(self):
@@ -13,10 +13,11 @@ class YouTubeRSSSpider(spider.Spider):
                 'https://www.youtube.com/feeds/videos.xml?channel_id=UC6KEU5-KSTszEOOnAl8ZwPQ',  # King Record
                 'https://www.youtube.com/feeds/videos.xml?channel_id=UC_A_w2KhC3emxNZWQ3pYpfQ',  # Flying Dog
                 'https://www.youtube.com/feeds/videos.xml?channel_id=UCeOMz8AiNhsDhEovu5_3ujQ',  # NBC
-                'https://www.youtube.com/feeds/videos.xml?channel_id=UCb-ekPowbBlQhyt7ZXPiu5Q'  # Pony Canyon
+                'https://www.youtube.com/feeds/videos.xml?channel_id=UCb-ekPowbBlQhyt7ZXPiu5Q',  # Pony Canyon
+                'https://www.youtube.com/feeds/videos.xml?channel_id=UC7RMi15o0aQacJhxOc6LLmw'
                 ]
         for up in list:
-            text = self.fetch(up).decode(
+            text = self.fetch(up + '&time=' + str(time.time())).decode(
                 'utf-8')
             soup = BeautifulSoup(text, 'xml')
             lastest = soup.find_all('entry')[0]
