@@ -87,12 +87,6 @@ def create_event(level, data, name, hash):
             Logger.info('[ Spider = ' + name + ' ] 新的数据已经记录 [ Hash = ' + hash + ' ]')
         except Shiny.ShinyError as e:
             Logger.error('无法向Shiny提交数据:' + str(e))
-        # socket.emit('event', json.dumps({
-        #     "level": level,
-        #     "spiderName": name,
-        #     "hash": hash,
-        #     "data": data
-        # }))
 
     except Exception as e:
         Logger.error('无法记录数据' + str(e))
