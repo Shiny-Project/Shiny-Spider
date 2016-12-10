@@ -17,7 +17,7 @@ class USGSEarthquakeSpider(spider.Spider):
 
         if latest:
             latest = latest[0]
-            level = int(re.search('M (\d\.\d)', latest.title.get_text()).group(1))
+            level = int(re.search('M (\d)\.\d', latest.title.get_text()).group(1))
             link = latest.link.get('href')
             title = "USGS地震速报"
             content = latest.title.get_text()
