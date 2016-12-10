@@ -1,5 +1,6 @@
 from core import spider
 from bs4 import BeautifulSoup
+import re
 
 
 class USGSEarthquakeSpider(spider.Spider):
@@ -9,22 +10,23 @@ class USGSEarthquakeSpider(spider.Spider):
 
     def main(self):
         """主抓取逻辑，只修改内容，不修改函数名"""
-        data = self.fetch('http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.atom').decode('utf-8')
+        data = self.fetch('http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.atom').decode(
+            'utf-8')
         soup = BeautifulSoup(data, 'xml')
         latest = soup.find_all('entry')
+        level = int(re.search("M (\d\.\d)", latest.title.get_text()).group(1))
+
         if latest:
             latest = latest[0]
             link = latest.link.get('href')
             title = "USGS地震速报"
             content = latest.title.get_text()
-            self.record(3, {
+            self.record(level - 3, {
                 "title": title,
                 "link": link,
                 "content": content,
                 "cover": ""
             })
-
-
 
 
 if __name__ == '__main__':
