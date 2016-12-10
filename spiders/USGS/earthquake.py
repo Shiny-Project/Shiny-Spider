@@ -14,10 +14,10 @@ class USGSEarthquakeSpider(spider.Spider):
             'utf-8')
         soup = BeautifulSoup(data, 'xml')
         latest = soup.find_all('entry')
-        level = int(re.search("M (\d\.\d)", latest.title.get_text()).group(1))
 
         if latest:
             latest = latest[0]
+            level = int(re.search('M (\d\.\d)', latest.title.get_text()).group(1))
             link = latest.link.get('href')
             title = "USGS地震速报"
             content = latest.title.get_text()
