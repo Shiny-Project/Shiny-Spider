@@ -88,9 +88,9 @@ def main():
             # 主程序启动
             Logger.debug('监视流程启动')
             while True:
-                list = database.get_spider_list()
-                if list:
-                    for spider in list:
+                spider_list = database.get_spider_list()
+                if spider_list:
+                    for spider in spider_list:
                         renew(spider.name)
                 else:
                     Logger.warning('没有已经定义的Spider')
