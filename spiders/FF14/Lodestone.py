@@ -5,8 +5,8 @@ from lxml import etree
 class LodestoneSpider(spider.Spider):
     """ Final Fantasy Lodestone Topic Spider """
 
-    def __init__(self, socket):
-        super(LodestoneSpider, self).__init__(socket)
+    def __init__(self):
+        super(LodestoneSpider, self).__init__()
         self.name = 'Lodestone'
 
     def main(self):
