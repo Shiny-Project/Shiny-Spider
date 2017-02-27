@@ -24,5 +24,6 @@ class LodestoneSpider(spider.Spider):
                 '//*[@id="main"]/div/div[2]/ul/li[1]/div/a[1]/@href')[0]
         self.record(3, {
             "title": title,
-            "content": content
+            "content": content,
+            "link": link
         })
