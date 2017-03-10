@@ -23,7 +23,7 @@ class YouTubeRSSSpider(spider.Spider):
                 ]
         for up in list:
             url = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=' + up + '&key=' + self.YOUTUBE_API_KEY
-            text = self.fetch(url)
+            text = self.fetch(url).decode('utf-8')
             res = json.loads(text)
             for item in res["items"]:
                 title = item["snippet"]["title"]
