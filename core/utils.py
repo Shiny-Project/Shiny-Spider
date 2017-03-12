@@ -1,5 +1,7 @@
+# Shiny Helper Functions
+
 import importlib.util
-import time
+import time,datetime
 
 
 def load_spider(path):
@@ -9,7 +11,6 @@ def load_spider(path):
     spec.loader.exec_module(spider)
     return spider
 
-
 def parse_time_string(time_string):
     try:
         timestamp = int(time.mktime(time_string.timetuple()))
@@ -17,6 +18,8 @@ def parse_time_string(time_string):
     except Exception as e:
         return 0
 
-
 def get_time():
     return int(time.time())
+
+def get_timestamp():
+    return datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')

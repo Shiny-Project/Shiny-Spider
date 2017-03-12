@@ -1,7 +1,10 @@
+# Shiny 数据库通讯
+
 import datetime, hashlib, time
 import json
 
 import core.config as config
+from core import utils
 from core.log import Log
 
 from sqlalchemy import *
@@ -29,6 +32,7 @@ class Data(Base):
     level = Column(Integer)
     hash = Column(String)
     publisher = Column(String)  # 其实是Spider名
+    analysed = Column(Integer)
     createdAt = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"))  # Sails自动维护
     updatedAt = Column(TIMESTAMP)  # Sails自动维护 下同
 
@@ -45,16 +49,21 @@ class Spider(Base):
     createdAt = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"))
     updatedAt = Column(TIMESTAMP)
 
-
-# 定义Job表的ORM映射
-class Job(Base):
-    __tablename__ = 'job'
+class Keyword(Base):
+    __tablename__ = 'keyword'
     id = Column(Integer, primary_key=True)
-    name = Column(String)
-    info = Column(Text)
+    keyword = Column(String)
     createdAt = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"))
     updatedAt = Column(TIMESTAMP)
 
+class KeywordScore(Base):
+    __tablename__ = 'keywordscore'
+    id = Column(Integer, primary_key=True)
+    keyword = Column(String)
+    score = Column(Float)
+    event = Column(Integer)
+    createdAt = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"))
+    updatedAt = Column(TIMESTAMP)
 
 # 初始化 连接数据库
 engine = create_engine(
@@ -106,7 +115,67 @@ def renew_trigger_time(spider_name):
 
 
 def get_spider_list():
+    """获得全部 Spider 列表"""
     try:
         return session.query(Spider).all()
     except Exception as e:
         Logger.error('无法获得 Spider 列表' + str(e))
+
+
+def get_unanalysed_events(timestamp = datetime.datetime.fromtimestamp(time.time() - 3 * 60).strftime('%Y-%m-%d %H:%M:%S')):
+    """获得全部未分析的事件列表"""
+    try:
+        response = session.query(Data).filter(
+            Data.createdAt >= timestamp,
+            Data.analysed == 0
+        ).all()
+        return response
+    except Exception as e:
+        Logger.error('无法获得事件列表' + str(e))
+
+def find_keyword(keyword):
+    """搜索Keyword"""
+    try:
+        return session.query(Keyword).filter(
+            Keyword.keyword == keyword
+        ).all()
+    except Exception as e:
+        Logger.error('搜索关键词出现错误' + str(e))
+
+
+def create_keyword(keyword):
+    """创建新的关键词"""
+    new_keyword = Keyword()
+    timestamp = utils.get_timestamp()
+    new_keyword.keyword = keyword
+    new_keyword.createdAt = timestamp
+    new_keyword.updatedAt = timestamp
+    try:
+        session.add(new_keyword)
+        session.commit()
+    except Exception as e:
+        Logger.error('添加关键词出现错误' + str(e))
+   
+def create_keywordscore(keyword, score, eventid):
+    """添加 关键词 - 权重 数据"""
+    new_keywordscore = KeywordScore()
+    timestamp = utils.get_timestamp()
+    new_keywordscore.keyword = keyword
+    new_keywordscore.event = eventid
+    new_keywordscore.score = score
+    new_keywordscore.createdAt = timestamp
+    new_keywordscore.updatedAt = timestamp
+
+    try:
+        session.add(new_keywordscore)
+        session.commit()
+    except Exception as e:
+        Logger.error('添加关键词 - 权重数据出现错误' + str(e))
+
+def mark_as_analysed(eventid):
+    res = session.query(Data).filter(Data.id == eventid).one()
+    res.analysed = 1
+    try:
+        session.commit()
+    except Exception as e:
+        Logger.error('将 Event ID = [' + eventid + '] 标记为已分析时出现错误')

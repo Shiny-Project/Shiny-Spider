@@ -1,5 +1,6 @@
-import time
+# Shiny 控制台日志输出
 
+import time
 
 class bcolors:
     HEADER = '\033[95m'
