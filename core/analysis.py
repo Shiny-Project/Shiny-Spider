@@ -23,6 +23,8 @@ def get_unanalysed_events(timestamp):
     return database.get_unanalysed_events(timestamp)
 
 def analyze_events(event_list = []):
+    if (event_list == []):
+        Logger.info('当前无未分析事件')
     for event in event_list:
         data = json.loads(event.data)
         text = data["content"]
@@ -54,7 +56,9 @@ def analyze_events(event_list = []):
             Logger.error('分析 Event ID = [' + str(event.id) + '] 时出现错误:' + str(e))
 
 def analyze_all_events():
-    analyze_events(get_unanalysed_events(str(datetime.datetime(2016,1,1))))
+    Logger.info('分析所有未分析事件')
+    event_list = get_unanalysed_events(str(datetime.datetime(2016,1,1)))
+    analyze_events(event_list)
 
 if __name__ == '__main__':
     pass
