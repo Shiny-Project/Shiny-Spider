@@ -30,7 +30,8 @@ def analyze_events(event_list = []):
         data = json.loads(event.data)
         text = data["content"]
 
-        if text == "":
+        if text == "" or not text:
+            Logger.debug('Event ID = [' + str(event.id) + '] 缺少信息 跳过分析')
             Database.mark_as_analysed(event.id)
             continue
 
