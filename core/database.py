@@ -68,7 +68,7 @@ class KeywordScore(Base):
 # 初始化 连接数据库
 engine = create_engine(
     'mysql+pymysql://' + config.DATABASE_USER + ':' + config.DATABASE_PASSWORD + '@localhost' + '/' + config.DATABASE_NAME, echo=config.ENABLE_DATABASE_CONSOLE)
-DBSession = sessionmaker(bind=engine)
+DBSession = sessionmaker(bind=engine, autoflush=True)
 session = DBSession()
 
 
@@ -123,14 +123,13 @@ def get_spider_list():
 
 
 def get_unanalysed_events(timestamp = datetime.datetime.fromtimestamp(time.time() - 3 * 60).strftime('%Y-%m-%d %H:%M:%S')):
-    session.close() # Flush Session 
-    # THIS IS A MAGIC PLEASE DO NOT MODIFY IT 
     """获得全部未分析的事件列表"""
     try:
         response = session.query(Data).filter(
             Data.createdAt >= timestamp,
             Data.analysed == 0
         ).all()
+        session.commit()
         return response
     except Exception as e:
         Logger.error('无法获得事件列表' + str(e))
