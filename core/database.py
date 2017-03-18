@@ -112,7 +112,6 @@ class Database():
             response.trigger_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
             response.trigger_count += 1
             self.session.commit()
-            self.session.close()
             Logger.debug('更新 [ Spider = ' + spider_name + ' ] 的调用次数和时间')
         except Exception as e:
             Logger.error('无法更新Spider的调用时间 [ Spider = ' + spider_name + ' ] ')

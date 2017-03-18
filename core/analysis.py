@@ -42,7 +42,12 @@ def analyze_events(event_list = []):
             continue
 
         Logger.debug('尝试获得 Event ID = [' + str(event.id) + '] 的关键词')
-        keywords = extract_keywords(text)
+
+        try:
+            keywords = extract_keywords(text)
+        except Exception as e:
+            Logger.error('无法qude Event ID = [' + str(event.id) + '] 的关键词列表')
+            continue
         
         try:
             if keywords == []:
