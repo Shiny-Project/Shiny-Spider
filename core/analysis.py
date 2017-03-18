@@ -3,6 +3,7 @@ import requests, json, datetime
 from core import database,config
 from core.log import Log
 Logger = Log()
+Database = database.Database()
 
 def extract_keywords(text):
     url = 'https://jlp.yahooapis.jp/KeyphraseService/V1/extract'
@@ -20,7 +21,7 @@ def extract_keywords(text):
     return response
 
 def get_unanalysed_events(timestamp):
-    return database.get_unanalysed_events(timestamp)
+    return Database.get_unanalysed_events(timestamp)
 
 def analyze_events(event_list = []):
     if (event_list == []):
@@ -30,7 +31,7 @@ def analyze_events(event_list = []):
         text = data["content"]
 
         if text == "":
-            database.mark_as_analysed(event.id)
+            Database.mark_as_analysed(event.id)
             continue
 
         Logger.debug('尝试获得 Event ID = [' + str(event.id) + '] 的关键词')
@@ -41,17 +42,17 @@ def analyze_events(event_list = []):
                 Logger.debug('Event ID = [' + str(event.id) + '] 关键词列表为空')
             else:
                 for key in keywords.keys():
-                    res = database.find_keyword(key)
+                    res = Database.find_keyword(key)
                     if (len(res) == 0):
                         # 一个新的Keyword出现了!
                         Logger.debug('新 Keyword: [' + key + '] 发现 尝试记录')
-                        database.create_keyword(key)
+                        Database.create_keyword(key)
                     
                     Logger.debug('写入新的 Keyword - Score 数据')
-                    database.create_keywordscore(key, keywords[key], event.id)
+                    Database.create_keywordscore(key, keywords[key], event.id)
             
             # 标记已分析
-            database.mark_as_analysed(event.id)
+            Database.mark_as_analysed(event.id)
         except Exception as e:
             Logger.error('分析 Event ID = [' + str(event.id) + '] 时出现错误:' + str(e))
 

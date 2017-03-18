@@ -8,11 +8,11 @@ from core import config
 from core import analysis
 
 Logger = Log()
-
+Database = database.Database()
 
 def renew(spider_name):
     try:
-        spider_path, spider_trigger_time, spider_info = database.get_spider_info(spider_name)
+        spider_path, spider_trigger_time, spider_info = Database.get_spider_info(spider_name)
         Logger.debug('成功获得 Spider : [ ' + spider_name + ' ]的路径 : [ ' + spider_path + ' ]')
         timestamp = utils.parse_time_string(spider_trigger_time)
         spider = utils.load_spider(spider_path)
@@ -21,7 +21,7 @@ def renew(spider_name):
                 Logger.debug('[ Spider = ' + spider_name + ' ] 数据未过期')  # 数据没有过期 不执行
             else:
                 getattr(spider, spider_name + 'Spider')().main()  # 数据过期 执行抓取逻辑
-                database.renew_trigger_time(spider_name)
+                Database.renew_trigger_time(spider_name)
         except Exception as e:
             print(e)
             if not spider_info:
@@ -33,7 +33,7 @@ def renew(spider_name):
                 else:
                     if utils.get_time() - timestamp >= int(info['expires']):
                         getattr(spider, spider_name + 'Spider')().main()  # 数据过期 执行抓取逻辑
-                        database.renew_trigger_time(spider_name)
+                        Database.renew_trigger_time(spider_name)
                     else:
                         Logger.debug('[ Spider = ' + spider_name + ' ] 数据未过期')
 
@@ -47,7 +47,7 @@ def show_version():
 def start_spiders():
     Logger.info('爬虫就绪')
     while True:
-        spider_list = database.get_spider_list()
+        spider_list = Database.get_spider_list()
         if spider_list:
             for spider in spider_list:
                 renew(spider.name)

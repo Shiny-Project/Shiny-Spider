@@ -65,23 +65,6 @@ class KeywordScore(Base):
     createdAt = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"))
     updatedAt = Column(TIMESTAMP)
 
-# 初始化 连接数据库
-engine = create_engine(
-    'mysql+pymysql://' + config.DATABASE_USER + ':' + config.DATABASE_PASSWORD + '@localhost' + '/' + config.DATABASE_NAME, echo=config.ENABLE_DATABASE_CONSOLE)
-DBSession = sessionmaker(bind=engine, autoflush=True)
-session = DBSession()
-
-
-def get_spider_info(spider_name):
-    """根据Spider的名字获取Spider的路径"""
-    try:
-        response = session.query(Spider).filter(Spider.name == spider_name).one()
-        session.close()
-        return response.path, response.trigger_time, response.info
-    except Exception as e:
-        Logger.error('无法从数据库取得数据' + str(e))
-
-
 def create_event(level, data, name, hash):
     """记录数据"""
     if not hash:
@@ -100,83 +83,108 @@ def create_event(level, data, name, hash):
     except Exception as e:
         Logger.error('无法记录数据' + str(e))
 
-
-def renew_trigger_time(spider_name):
-    """更新Spider的调用次数和最后一次调用的时间"""
-    try:
-        response = session.query(Spider).filter(Spider.name == spider_name).one()
-        response.trigger_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-        response.trigger_count += 1
-        session.commit()
-        session.close()
-        Logger.debug('更新 [ Spider = ' + spider_name + ' ] 的调用次数和时间')
-    except Exception as e:
-        Logger.error('无法更新Spider的调用时间 [ Spider = ' + spider_name + ' ] ')
+class Database():
+    session = None
+    def __init__(self):
+        # 初始化 连接数据库
+        engine = create_engine(
+            'mysql+pymysql://' + config.DATABASE_USER + ':' + config.DATABASE_PASSWORD + '@localhost' + '/' + config.DATABASE_NAME, echo=config.ENABLE_DATABASE_CONSOLE)
+        DBSession = sessionmaker(bind=engine, autoflush=True)
+        self.session = DBSession()
 
 
-def get_spider_list():
-    """获得全部 Spider 列表"""
-    try:
-        return session.query(Spider).all()
-    except Exception as e:
-        Logger.error('无法获得 Spider 列表' + str(e))
+    def get_spider_info(self, spider_name):
+        """根据Spider的名字获取Spider的路径"""
+        try:
+            response = self.session.query(Spider).filter(Spider.name == spider_name).one()
+            self.session.commit()
+            return response.path, response.trigger_time, response.info
+        except Exception as e:
+            Logger.error('无法从数据库取得数据' + str(e))
 
 
-def get_unanalysed_events(timestamp = datetime.datetime.fromtimestamp(time.time() - 3 * 60).strftime('%Y-%m-%d %H:%M:%S')):
-    """获得全部未分析的事件列表"""
-    try:
-        response = session.query(Data).filter(
-            Data.createdAt >= timestamp,
-            Data.analysed == 0
-        ).all()
-        session.commit()
-        return response
-    except Exception as e:
-        Logger.error('无法获得事件列表' + str(e))
-
-def find_keyword(keyword):
-    """搜索Keyword"""
-    try:
-        return session.query(Keyword).filter(
-            Keyword.keyword == keyword
-        ).all()
-    except Exception as e:
-        Logger.error('搜索关键词出现错误' + str(e))
 
 
-def create_keyword(keyword):
-    """创建新的关键词"""
-    new_keyword = Keyword()
-    timestamp = utils.get_timestamp()
-    new_keyword.keyword = keyword
-    new_keyword.createdAt = timestamp
-    new_keyword.updatedAt = timestamp
-    try:
-        session.add(new_keyword)
-        session.commit()
-    except Exception as e:
-        Logger.error('添加关键词出现错误' + str(e))
-   
-def create_keywordscore(keyword, score, eventid):
-    """添加 关键词 - 权重 数据"""
-    new_keywordscore = KeywordScore()
-    timestamp = utils.get_timestamp()
-    new_keywordscore.keyword = keyword
-    new_keywordscore.event = eventid
-    new_keywordscore.score = score
-    new_keywordscore.createdAt = timestamp
-    new_keywordscore.updatedAt = timestamp
+    def renew_trigger_time(self, spider_name):
+        """更新Spider的调用次数和最后一次调用的时间"""
+        try:
+            response = self.session.query(Spider).filter(Spider.name == spider_name).one()
+            response.trigger_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+            response.trigger_count += 1
+            self.session.commit()
+            self.session.close()
+            Logger.debug('更新 [ Spider = ' + spider_name + ' ] 的调用次数和时间')
+        except Exception as e:
+            Logger.error('无法更新Spider的调用时间 [ Spider = ' + spider_name + ' ] ')
 
-    try:
-        session.add(new_keywordscore)
-        session.commit()
-    except Exception as e:
-        Logger.error('添加关键词 - 权重数据出现错误' + str(e))
 
-def mark_as_analysed(eventid):
-    res = session.query(Data).filter(Data.id == eventid).one()
-    res.analysed = 1
-    try:
-        session.commit()
-    except Exception as e:
-        Logger.error('将 Event ID = [' + eventid + '] 标记为已分析时出现错误')
+    def get_spider_list(self):
+        """获得全部 Spider 列表"""
+        try:
+            response = self.session.query(Spider).all()
+            self.session.commit()
+            return response
+        except Exception as e:
+            Logger.error('无法获得 Spider 列表' + str(e))
+
+
+    def get_unanalysed_events(self, timestamp = datetime.datetime.fromtimestamp(time.time() - 3 * 60).strftime('%Y-%m-%d %H:%M:%S')):
+        """获得全部未分析的事件列表"""
+        try:
+            response = self.session.query(Data).filter(
+                Data.createdAt >= timestamp,
+                Data.analysed == 0
+            ).all()
+            self.session.close()
+            return response
+        except Exception as e:
+            Logger.error('无法获得事件列表' + str(e))
+
+    def find_keyword(self, keyword):
+        """搜索Keyword"""
+        try:
+            response = self.session.query(Keyword).filter(
+                Keyword.keyword == keyword
+            ).all()
+            self.session.commit()
+            return response
+        except Exception as e:
+            Logger.error('搜索关键词出现错误' + str(e))
+
+
+    def create_keyword(self, keyword):
+        """创建新的关键词"""
+        new_keyword = Keyword()
+        timestamp = utils.get_timestamp()
+        new_keyword.keyword = keyword
+        new_keyword.createdAt = timestamp
+        new_keyword.updatedAt = timestamp
+        try:
+            self.session.add(new_keyword)
+            self.session.commit()
+        except Exception as e:
+            Logger.error('添加关键词出现错误' + str(e))
+    
+    def create_keywordscore(self, keyword, score, eventid):
+        """添加 关键词 - 权重 数据"""
+        new_keywordscore = KeywordScore()
+        timestamp = utils.get_timestamp()
+        new_keywordscore.keyword = keyword
+        new_keywordscore.event = eventid
+        new_keywordscore.score = score
+        new_keywordscore.createdAt = timestamp
+        new_keywordscore.updatedAt = timestamp
+
+        try:
+            self.session.add(new_keywordscore)
+            self.session.commit()
+        except Exception as e:
+            Logger.error('添加关键词 - 权重数据出现错误' + str(e))
+
+    def mark_as_analysed(self, eventid):
+        res = self.session.query(Data).filter(Data.id == eventid).one()
+        res.analysed = 1
+        try:
+            self.session.commit()
+        except Exception as e:
+            Logger.error('将 Event ID = [' + eventid + '] 标记为已分析时出现错误')
