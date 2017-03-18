@@ -27,7 +27,13 @@ def analyze_events(event_list = []):
     if (event_list == []):
         Logger.info('当前无未分析事件')
     for event in event_list:
-        data = json.loads(event.data)
+        try:
+            data = json.loads(event.data)
+        except Exception as e:
+            Logger.debug('Event ID = [' + str(event.id) + '] 解析错误 跳过分析')
+            Database.mark_as_analysed(event.id)
+            continue
+
         text = data["content"]
 
         if text == "" or not text:
