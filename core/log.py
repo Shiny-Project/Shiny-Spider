@@ -56,9 +56,9 @@ class Log():
         }
 
         try:
-            print(response.text)
+            response = requests.post(self.API, data=json.dumps(data), headers=headers)
         except Exception as e:
-            print(bcolors.FAIL + '在上报错误信息时出现错误: 无法连接到日志服务器' + text + bcolors.ENDC)
+            print(bcolors.FAIL + '\n在上报错误信息时出现错误: 无法连接到日志服务器\n' + text + bcolors.ENDC)
 
 if __name__ == '__main__':
     pass
