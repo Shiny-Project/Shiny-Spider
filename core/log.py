@@ -46,6 +46,9 @@ class Log():
         print(bcolors.FAIL + '[ERROR] [' + str(time.strftime(self.TIMEFORMAT, time.localtime())) + '] ' + text + bcolors.ENDC)
 
     def send_log(self, level, text):
+        if config.DISABLE_LOG_REPORT:
+            return
+
         data = {
             "level": level,
             "short_message": text,
