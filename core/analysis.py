@@ -30,14 +30,14 @@ def analyze_events(event_list = []):
         try:
             data = json.loads(event.data)
         except Exception as e:
-            Logger.debug('Event ID = [' + str(event.id) + '] 解析错误 跳过分析')
+            Logger.warning('Event ID = [' + str(event.id) + '] 解析错误 跳过分析')
             Database.mark_as_analysed(event.id)
             continue
 
         text = data["content"]
 
         if text == "" or not text:
-            Logger.debug('Event ID = [' + str(event.id) + '] 缺少信息 跳过分析')
+            Logger.warning('Event ID = [' + str(event.id) + '] 缺少信息 跳过分析')
             Database.mark_as_analysed(event.id)
             continue
 
@@ -46,7 +46,7 @@ def analyze_events(event_list = []):
         try:
             keywords = extract_keywords(text)
         except Exception as e:
-            Logger.error('无法qude Event ID = [' + str(event.id) + '] 的关键词列表')
+            Logger.error('无法取得 Event ID = [' + str(event.id) + '] 的关键词列表')
             continue
         
         try:

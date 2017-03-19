@@ -11,6 +11,7 @@ Logger = Log()
 Database = database.Database()
 
 def renew(spider_name):
+    Logger.info('刷新 Spider : [ ' + spider_name + ' ] 数据')
     try:
         spider_path, spider_trigger_time, spider_info = Database.get_spider_info(spider_name)
         Logger.debug('成功获得 Spider : [ ' + spider_name + ' ]的路径 : [ ' + spider_path + ' ]')
@@ -23,7 +24,6 @@ def renew(spider_name):
                 getattr(spider, spider_name + 'Spider')().main()  # 数据过期 执行抓取逻辑
                 Database.renew_trigger_time(spider_name)
         except Exception as e:
-            print(e)
             if not spider_info:
                 Logger.error('[ Spider = ' + spider_name + ' ] 缺少有效期设置')
             else:
