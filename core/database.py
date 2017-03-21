@@ -88,7 +88,7 @@ class Database():
     def __init__(self):
         # 初始化 连接数据库
         engine = create_engine(
-            'mysql+pymysql://' + config.DATABASE_USER + ':' + config.DATABASE_PASSWORD + '@localhost' + '/' + config.DATABASE_NAME, echo=config.ENABLE_DATABASE_CONSOLE)
+            'mysql+pymysql://' + config.DATABASE_USER + ':' + config.DATABASE_PASSWORD + '@localhost' + '/' + config.DATABASE_NAME + '?charset=utf8', echo=config.ENABLE_DATABASE_CONSOLE)
         DBSession = sessionmaker(bind=engine, autoflush=True)
         self.session = DBSession()
 

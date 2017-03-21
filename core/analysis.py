@@ -48,7 +48,7 @@ def analyze_events(event_list = []):
         except Exception as e:
             Logger.error('无法取得 Event ID = [' + str(event.id) + '] 的关键词列表')
             continue
-        
+
         try:
             if keywords == []:
                 Logger.debug('Event ID = [' + str(event.id) + '] 关键词列表为空')
