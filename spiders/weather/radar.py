@@ -86,13 +86,14 @@ class RadarSpider(spider.Spider):
         if len(warning_citys) > 0:
             # 生成警告事件
             warning_text = "请下列地区注意可能到来的强对流天气:\r\n" + " ".join(warning_citys) + "。"
+            warning_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H')
+            warning_hour = math.floor(int(warning_time.split(' ')[1]) / 6)
+            warning_time = warning_time.split(' ')[0] + '#P' + str(warning_hour)
 
-        warning_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H')
-        warning_hour = math.floor(int(warning_time.split(' ')[1]) / 6)
-        warning_time = warning_time.split(' ')[0] + '#P' + str(warning_hour)
-
-        self.record(3, {
-            "title": "强对流天气警示",
-            "content": warning_text,
-            "link": "http://www.nmc.cn/publish/radar/huadong.html#" + warning_time
-        })
+            self.record(3, {
+                "title": "强对流天气警示",
+                "content": warning_text,
+                "link": "http://www.nmc.cn/publish/radar/huadong.html#" + warning_time
+            })
+        else:
+            pass
