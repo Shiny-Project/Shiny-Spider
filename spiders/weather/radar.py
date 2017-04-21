@@ -20,7 +20,7 @@ class RadarSpider(spider.Spider):
         response = self.fetch('http://www.nmc.cn/publish/radar/huadong.html').decode('utf-8')
         html_tree = etree.HTML(response)
         stringify = etree.XPath("string()")
-        img_url = html_tree.xpath('//*[@id="imgpath"]/@href')[0]
+        img_url = html_tree.xpath('//*[@id="imgpath"]/@src')[0]
 
         # 下载读取图片
         img_response = requests.get(img_url).content
