@@ -10,8 +10,13 @@ from core import spider
 from lxml import etree
 
 
+def in_area(point, area):
+    return area[0][0] <= point[0] <= area[1][0] and area[0][1] <= point[1] <= area[1][1]
+
+
 class RadarSpider(spider.Spider):
     """华东地区雷达监视"""
+
     def __init__(self):
         super(RadarSpider, self).__init__()
         self.name = 'RadarSpider'
@@ -39,28 +44,22 @@ class RadarSpider(spider.Spider):
         ]
 
         # 关注的城市列表
-        # 左上 右上 右下 左下
+        # 左上 右下
         citys = {
             "上海市": [
                 (386, 370),
-                (453, 370),
                 (453, 446),
-                (386, 446)
             ],
             "杭州市": [
                 (295, 466),
-                (363, 466),
                 (363, 532),
-                (295, 532)
             ],
             "郑州市": [
                 (0, 220),
-                (43, 220),
                 (43, 267),
-                (0, 267)
             ]
         }
-        
+
         # 存储的结果集
         result = {
             "上海市": 0,
@@ -76,13 +75,13 @@ class RadarSpider(spider.Spider):
                     if in_area(point, citys[city]):
                         # 记录这个超过阈值的点
                         result[city] += 1
-        
+
         # 不要太敏感。20像素再感知.
         warning_citys = []
         for city in result.keys():
             if result[city] > 20:
                 warning_citys.append(city)
-        
+
         if len(warning_citys) > 0:
             # 生成警告事件
             warning_text = "请下列地区注意可能到来的强对流天气:\r\n" + " ".join(warning_citys) + "。"
