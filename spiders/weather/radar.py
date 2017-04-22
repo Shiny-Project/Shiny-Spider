@@ -45,7 +45,7 @@ class RadarSpider(spider.Spider):
 
         # 关注的城市列表
         # 左上 右下
-        citys = {
+        cities = {
             "上海市": [
                 (386, 370),
                 (453, 446),
@@ -57,6 +57,38 @@ class RadarSpider(spider.Spider):
             "郑州市": [
                 (0, 220),
                 (43, 267),
+            ],
+            "宁波市": [
+                (406, 466),
+                (451, 511)
+            ],
+            "烟台市": [
+                (314, 34),
+                (366, 91)
+            ],
+            "济南市": [
+                (147, 90),
+                (193, 130)
+            ],
+            "南京市": [
+                (266, 359),
+                (306, 396)
+            ],
+            "福州市": [
+                (320, 700),
+                (363, 746)
+            ],
+            "厦门市": [
+                (275, 796),
+                (330, 848)
+            ],
+            "合肥市": [
+                (185, 361),
+                (229, 410)
+            ],
+            "武汉市": [
+                (40, 453),
+                (85, 489)
             ]
         }
 
@@ -64,27 +96,35 @@ class RadarSpider(spider.Spider):
         result = {
             "上海市": 0,
             "杭州市": 0,
-            "郑州市": 0
+            "郑州市": 0,
+            "宁波市": 0,
+            "烟台市": 0,
+            "济南市": 0,
+            "南京市": 0,
+            "福州市": 0,
+            "厦门市": 0,
+            "合肥市": 0,
+            "武汉市": 0
         }
 
         # 遍历像素 查找需要注意的像素点
         for index, pixel in enumerate(pixels):
             if pixel in warning_colors:
                 point = (index % width, math.floor(index / width))
-                for city in citys.keys():
-                    if in_area(point, citys[city]):
+                for city in cities.keys():
+                    if in_area(point, cities[city]):
                         # 记录这个超过阈值的点
                         result[city] += 1
 
         # 不要太敏感。20像素再感知.
-        warning_citys = []
+        warning_cities = []
         for city in result.keys():
             if result[city] > 20:
-                warning_citys.append(city)
+                warning_cities.append(city)
 
-        if len(warning_citys) > 0:
+        if len(warning_cities) > 0:
             # 生成警告事件
-            warning_text = "请下列地区注意可能到来的强对流天气:\r\n" + " ".join(warning_citys) + "。"
+            warning_text = "请下列地区注意可能到来的强对流天气:\r\n" + " ".join(warning_cities) + "。"
             warning_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H')
             warning_hour = math.floor(int(warning_time.split(' ')[1]) / 6)
             warning_time = warning_time.split(' ')[0] + '#P' + str(warning_hour)
