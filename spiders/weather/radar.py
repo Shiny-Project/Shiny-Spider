@@ -130,11 +130,11 @@ class RadarSpider(spider.Spider):
         special_warning_cities = []
 
         for city in result.keys():
-            if result[city] > 20:
+            if result[city] > 5:
                 warning_cities.append(city)
 
         for city in special_warning_result.keys():
-            if special_warning_result[city] > 20:
+            if special_warning_result[city] > 5:
                 special_warning_cities.append(city)
 
         if len(warning_cities) > 0:
@@ -151,7 +151,7 @@ class RadarSpider(spider.Spider):
             })
 
         if len(special_warning_cities) > 0:
-            warning_text = "下列地区检测到极强的雷达回波，请注意防范龙卷风、冰雹等气象灾害:\r\n" + " ".join(warning_cities) + "。"
+            warning_text = "下列地区检测到强雷达回波，请注意防范龙卷风、冰雹等气象灾害:\r\n" + " ".join(warning_cities) + "。"
             warning_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H')
             warning_hour = math.floor(int(warning_time.split(' ')[1]) / 6)
             warning_time = warning_time.split(' ')[0] + '#P' + str(warning_hour)
