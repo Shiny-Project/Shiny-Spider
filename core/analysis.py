@@ -1,9 +1,11 @@
 # Shiny 数据分析模块
 import requests, json, datetime
-from core import database,config
+from core import database, config
 from core.log import Log
+
 Logger = Log()
 Database = database.Database()
+
 
 def extract_keywords(text):
     url = 'https://jlp.yahooapis.jp/KeyphraseService/V1/extract'
@@ -16,15 +18,21 @@ def extract_keywords(text):
         'User-Agent': 'Shiny/0.1 (https://github.com/Shiny-Project/Shiny-README)'
     }
 
-    response = requests.get(url, params=data, headers=headers).json()
+    response = requests.get(url, params=data, headers=headers)
+    if response.status_code == 414:
+        return {}
 
-    return response
+    return response.json()
+
 
 def get_unanalysed_events(timestamp):
     return Database.get_unanalysed_events(timestamp)
 
-def analyze_events(event_list = []):
-    if (event_list == []):
+
+def analyze_events(event_list=None):
+    if event_list is None:
+        event_list = []
+    if not event_list:
         Logger.info('当前无未分析事件')
     for event in event_list:
         try:
@@ -46,32 +54,34 @@ def analyze_events(event_list = []):
         try:
             keywords = extract_keywords(text)
         except Exception as e:
-            Logger.error('无法取得 Event ID = [' + str(event.id) + '] 的关键词列表')
+            Logger.error('无法取得 Event ID = [' + str(event.id) + '] 的关键词列表' + str(e))
             continue
 
         try:
-            if keywords == []:
+            if not keywords:
                 Logger.debug('Event ID = [' + str(event.id) + '] 关键词列表为空')
             else:
                 for key in keywords.keys():
                     res = Database.find_keyword(key)
-                    if (len(res) == 0):
+                    if len(res) == 0:
                         # 一个新的Keyword出现了!
                         Logger.debug('新 Keyword: [' + key + '] 发现 尝试记录')
                         Database.create_keyword(key)
-                    
+
                     Logger.debug('写入新的 Keyword - Score 数据')
                     Database.create_keywordscore(key, keywords[key], event.id)
-            
+
             # 标记已分析
             Database.mark_as_analysed(event.id)
         except Exception as e:
             Logger.error('分析 Event ID = [' + str(event.id) + '] 时出现错误:' + str(e))
 
+
 def analyze_all_events():
     Logger.info('分析所有未分析事件')
-    event_list = get_unanalysed_events(str(datetime.datetime(2016,1,1)))
+    event_list = get_unanalysed_events(str(datetime.datetime(2016, 1, 1)))
     analyze_events(event_list)
+
 
 if __name__ == '__main__':
     pass
