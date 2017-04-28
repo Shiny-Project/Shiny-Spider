@@ -10,6 +10,7 @@ from core import analysis
 Logger = Log()
 Database = database.Database()
 
+
 def renew(spider_name):
     Logger.info('刷新 Spider : [ ' + spider_name + ' ] 数据')
     try:
@@ -24,6 +25,7 @@ def renew(spider_name):
                 getattr(spider, spider_name + 'Spider')().main()  # 数据过期 执行抓取逻辑
                 Database.renew_trigger_time(spider_name)
         except Exception as e:
+            Logger.debug(str(e))
             if not spider_info:
                 Logger.error('[ Spider = ' + spider_name + ' ] 缺少有效期设置')
             else:
@@ -44,6 +46,7 @@ def renew(spider_name):
 def show_version():
     print(meta.project + ' ' + meta.version)
 
+
 def start_spiders():
     Logger.info('爬虫就绪')
     while True:
@@ -54,11 +57,14 @@ def start_spiders():
         else:
             Logger.warning('没有已经定义的Spider')
         time.sleep(30)
+
+
 def start_analyzer():
     Logger.info('分析就绪')
     while True:
         analysis.analyze_all_events()
         time.sleep(30)
+
 
 def main():
     # 初始化
@@ -101,15 +107,15 @@ def main():
 
         elif command in ['ignite', 'start', 'lift']:
             # 主程序启动
-            t1 = threading.Thread(target= start_analyzer, daemon=True)
-            t2 = threading.Thread(target= start_spiders, daemon=True)
+            t1 = threading.Thread(target=start_analyzer, daemon=True)
+            t2 = threading.Thread(target=start_spiders, daemon=True)
 
             t1.start()
             t2.start()
 
             while True:
                 time.sleep(1)
-            
+
     exit()
 
 
