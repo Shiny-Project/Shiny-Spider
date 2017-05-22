@@ -1,37 +1,41 @@
-from core import spider
+from core import spider,config
 from bs4 import BeautifulSoup
-import time
+import time,json
 
 class YouTubeRSSSpider(spider.Spider):
     def __init__(self):
         super(YouTubeRSSSpider, self).__init__()  # 仅修改类名，不要修改其他
         self.name = 'YouTubeRSS'  # 声明Spider名，要和类名里的一样
+        
+        if config.YOUTUBE_API_KEY:
+            self.YOUTUBE_API_KEY = config.YOUTUBE_API_KEY
+        else:
+            raise Exception('YOUTUBE_API_KEY 未指定.')
 
     def main(self):
         """主抓取逻辑，只修改内容，不修改函数名"""
-        list = ['https://www.youtube.com/feeds/videos.xml?channel_id=UCpRh2xmGtaVhFVuyCB271pw',  # Lantis
-                'https://www.youtube.com/feeds/videos.xml?channel_id=UC6KEU5-KSTszEOOnAl8ZwPQ',  # King Record
-                'https://www.youtube.com/feeds/videos.xml?channel_id=UC_A_w2KhC3emxNZWQ3pYpfQ',  # Flying Dog
-                'https://www.youtube.com/feeds/videos.xml?channel_id=UCeOMz8AiNhsDhEovu5_3ujQ',  # NBC
-                'https://www.youtube.com/feeds/videos.xml?channel_id=UCb-ekPowbBlQhyt7ZXPiu5Q',  # Pony Canyon
-                'https://www.youtube.com/feeds/videos.xml?channel_id=UC7RMi15o0aQacJhxOc6LLmw'
+        list = ['UUpRh2xmGtaVhFVuyCB271pw',  # Lantis
+                'UU6KEU5-KSTszEOOnAl8ZwPQ',  # King Record
+                'UU_A_w2KhC3emxNZWQ3pYpfQ',  # Flying Dog
+                'UUeOMz8AiNhsDhEovu5_3ujQ',  # NBC
+                'UUb-ekPowbBlQhyt7ZXPiu5Q',  # Pony Canyon
+                'UU7RMi15o0aQacJhxOc6LLmw'   # ColumbiaMusicJp
                 ]
         for up in list:
-            text = self.fetch(up + '&time=' + str(time.time())).decode(
-                'utf-8')
-            soup = BeautifulSoup(text, 'xml')
-            lastest = soup.find_all('entry')[0]
-            link = lastest.link.get('href')
-            detail = lastest.find('group')
-            title = detail.title.get_text()
-            description = detail.description.get_text()
-            cover = detail.thumbnail.get('url')
-            self.record(3, {
-                "title": title,
-                "link": link,
-                "content": description,
-                "cover": cover
-            })
+            url = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=' + up + '&key=' + self.YOUTUBE_API_KEY
+            text = self.fetch(url).decode('utf-8')
+            res = json.loads(text)
+            for item in res["items"]:
+                title = item["snippet"]["title"]
+                cover = item["snippet"]["thumbnails"]["default"]["url"]
+                description = item["snippet"]["description"]
+                link = "https://www.youtube.com/watch?v=" + item["snippet"]["resourceId"]["videoId"]
+                self.record(3, {
+                    "title": title,
+                    "link": link,
+                    "content": description,
+                    "cover": cover
+                })
 
     def check(self, timestamp):  # 这个函数可以不写
         """检查数据是否过期(optional)，只修改内容，不修改函数名，返回布尔型"""

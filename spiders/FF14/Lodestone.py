@@ -16,12 +16,12 @@ class LodestoneSpider(spider.Spider):
         html_tree = etree.HTML(response)
         stringify = etree.XPath("string()")
         title = stringify(html_tree.xpath(
-            '//*[@id="main"]/div/div[2]/ul/li[1]/header/span/a')[0])
+            '//*[@id="news"]/div[4]/div[2]/div[1]/div/ul[3]/li[1]/header/p/a')[0])
         content = stringify(html_tree.xpath(
-            '//*[@id="main"]/div/div[2]/ul/li[1]/div')[0])
+            '//*[@id="news"]/div[4]/div[2]/div[1]/div/ul[3]/li[1]/div/p[2]')[0])
         link = 'http://jp.finalfantasyxiv.com' + \
             html_tree.xpath(
-                '//*[@id="main"]/div/div[2]/ul/li[1]/div/a[1]/@href')[0]
+                '//*[@id="news"]/div[4]/div[2]/div[1]/div/ul[3]/li[1]/header/p/a/@href')[0]
         self.record(3, {
             "title": title,
             "content": content,
