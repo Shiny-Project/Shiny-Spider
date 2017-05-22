@@ -20,9 +20,9 @@ class YouTubeRSSSpider(spider.Spider):
                 'UUeOMz8AiNhsDhEovu5_3ujQ',  # NBC
                 'UUb-ekPowbBlQhyt7ZXPiu5Q',  # Pony Canyon
                 'UU7RMi15o0aQacJhxOc6LLmw',  # ColumbiaMusicJp
-                'UCUzpZpX2wRYOk3J8QTFGxDg',  # 乃木坂 46 OFFICIAL
-                'UCmr9bYmymcBmQ1p2tLBRvwg',  # 欅坂46 OFFICIAL
-                'UCCy_q-N7F2FOIZ6ZggHIAKg',  # Sony Music (Japan)
+                'UUUzpZpX2wRYOk3J8QTFGxDg',  # 乃木坂 46 OFFICIAL
+                'UUmr9bYmymcBmQ1p2tLBRvwg',  # 欅坂46 OFFICIAL
+                'UUCy_q-N7F2FOIZ6ZggHIAKg',  # Sony Music (Japan)
                 ]
         for up in list:
             url = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=' + up + '&key=' + self.YOUTUBE_API_KEY
