@@ -56,7 +56,7 @@ def start_spiders():
                 renew(spider.name)
         else:
             Logger.warning('没有已经定义的Spider')
-        time.sleep(10)
+        time.sleep(30)
 
 
 def start_analyzer():
