@@ -8,22 +8,16 @@ class AKB48Spider(spider.Spider):
 
     def main(self):
         """主抓取逻辑，只修改内容，不修改函数名"""
-        # data = {
-        #     'title': 'WUG Countdown',
-        #     'content': self.fetch('http://wug.moe/').decode('utf-8'),
-        #     'link': 'http://wug.moe'
-        # }
-
         data = self.fetch("http://www.akb48.co.jp/sousenkyo49th/result").decode('utf-8')
         data = json.loads(data)
         for member in data["selection_member"]:
             data = {
                 'title': 'AKB 49th 总选举第 ' + member["rank"] + " 位",
                 'content': member["group_name"] + ' ' + member["team_name"] + ' ' + member["name1"] + ' ' + member["vote_number"],
-                'link': 'http://www.akb48.co.jp/sousenkyo49th'
+                'link': 'http://www.akb48.co.jp/sousenkyo49th',
+                'cover': member['image_url']
             }
             self.record(3, data)
-
     
 
     def check(self, timestamp): # 这个函数可以不写
