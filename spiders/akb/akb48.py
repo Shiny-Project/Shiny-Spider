@@ -3,7 +3,7 @@ import json
 
 class AKB48Spider(spider.Spider):
     def __init__(self):
-        super(ExampleSpider, self).__init__()  # 仅修改类名，不要修改其他
+        super(AKB48Spider, self).__init__()  # 仅修改类名，不要修改其他
         self.name = 'AKB48'  # 声明Spider名，要和类名里的一样
 
     def main(self):
