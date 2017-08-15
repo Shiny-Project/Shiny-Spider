@@ -1,5 +1,5 @@
 from core import spider
-from bs4 import BeautifulSoup
+import json
 
 
 def class_is_even_or_odd(css_class=[]):
@@ -9,23 +9,21 @@ def class_is_even_or_odd(css_class=[]):
 
 
 class AlertSpider(spider.Spider):
-    """CMA 全国气象预警"""
+    """全国预警定点监控"""
 
     def __init__(self):
         super(AlertSpider, self).__init__()
         self.name = 'AlertSpider'
 
     def main(self):
-        text = self.fetch('http://www.nmc.cn/f/alarm.html').decode('utf-8')
-        tree = BeautifulSoup(text, 'xml')
-        alert_list = tree.find_all('div', class_=class_is_even_or_odd)
-        for alert in alert_list:
-            if ("上海" in alert.a.text or "杭州" in alert.a.text or "郑州" in alert.a.text) and ("市气象台" in alert.a.text) and ("区" not in alert.a.text and "县" not in alert.a.text):
+        result = self.fetch("http://www.12379.cn/data/alarm_list_all.html").decode("utf-8")
+        data = json.loads(result)
+        for item in data["alertData"]:
+            if ("杭州" in item["description"] or "上海" in item["description"] or "郑州" in item["description"]) and ("县" not in item["description"] and "区" not in item["description"]):
                 self.record(3, {
-                    "title": "中国·气象预警速报",
-                    "link": "http://www.nmc.cn" + alert.a.get('href'),
-                    "content": alert.find(class_="date").text + " " + alert.a.text,
-                    "cover": alert.img.get('src')
+                    "title": "中国·预警速报",
+                    "content": item["title"],
+                    "link": "http://www.12379.cn/data/alarmcontent.shtml?file={}.html".format(item["identifier"])
                 })
 
     def check(self, timestamp):
