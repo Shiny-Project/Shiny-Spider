@@ -22,7 +22,7 @@ class AlertSpider(spider.Spider):
             if ("杭州" in item["description"] or "上海" in item["description"] or "郑州" in item["description"]) and ("县" not in item["description"] and "区" not in item["description"]):
                 self.record(3, {
                     "title": "中国·预警速报",
-                    "content": item["title"],
+                    "content": item["headline"],
                     "link": "http://www.12379.cn/data/alarmcontent.shtml?file={}.html".format(item["identifier"])
                 })
 
