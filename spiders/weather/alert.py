@@ -2,12 +2,6 @@ from core import spider
 import json
 
 
-def class_is_even_or_odd(css_class=[]):
-    if css_class is None:
-        return False
-    return 'even' in css_class or 'odd' in css_class
-
-
 class AlertSpider(spider.Spider):
     """全国预警定点监控"""
 
