@@ -53,7 +53,7 @@ def start_spiders():
         spider_list = Database.get_spider_list()
         if spider_list:
             for spider in spider_list:
-                renew(spider.name)
+                renew(spider["name"])
         else:
             Logger.warning('没有已经定义的Spider')
         time.sleep(30)
