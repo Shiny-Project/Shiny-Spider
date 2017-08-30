@@ -121,7 +121,7 @@ class Database():
         """获得全部 Spider 列表"""
         try:
             response = shiny.get_jobs()
-            return json.loads(response)["data"]
+            return response["data"]
         except Exception as e:
             Logger.error('无法获得 Spider 列表' + str(e))
 
