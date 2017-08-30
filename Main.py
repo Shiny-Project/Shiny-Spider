@@ -18,30 +18,9 @@ def renew(spider_name):
         Logger.debug('成功获得 Spider : [ ' + spider_name + ' ]的路径 : [ ' + spider_path + ' ]')
         timestamp = utils.parse_time_string(spider_trigger_time)
         spider = utils.load_spider(spider_path)
-        try:
-            if getattr(spider, spider_name + 'Spider')().check(timestamp):
-                Logger.debug('[ Spider = ' + spider_name + ' ] 数据未过期')  # 数据没有过期 不执行
-            else:
-                getattr(spider, spider_name + 'Spider')().main()  # 数据过期 执行抓取逻辑
-                Database.renew_trigger_time(spider_name)
-        except Exception as e:
-            Logger.debug(str(e))
-            if not spider_info:
-                Logger.error('[ Spider = ' + spider_name + ' ] 缺少有效期设置')
-            else:
-                info = json.loads(spider_info)
-                if not info['expires']:
-                    Logger.error('[ Spider = ' + spider_name + ' ] 缺少有效期设置')
-                else:
-                    if utils.get_time() - timestamp >= int(info['expires']):
-                        getattr(spider, spider_name + 'Spider')().main()  # 数据过期 执行抓取逻辑
-                        Database.renew_trigger_time(spider_name)
-                    else:
-                        Logger.debug('[ Spider = ' + spider_name + ' ] 数据未过期')
-
+        getattr(spider, spider_name + 'Spider')().main()  # 数据过期 执行抓取逻辑
     except Exception as e:
         Logger.error('抓取数据失败 [ Spider Name = ' + spider_name + ' ] : ' + str(e))
-
 
 def show_version():
     print(meta.project + ' ' + meta.version)
