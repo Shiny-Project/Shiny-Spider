@@ -120,9 +120,8 @@ class Database():
     def get_spider_list(self):
         """获得全部 Spider 列表"""
         try:
-            response = self.session.query(Spider).all()
-            self.session.commit()
-            return response
+            response = shiny.get_jobs()
+            return json.loads(response)["data"]
         except Exception as e:
             Logger.error('无法获得 Spider 列表' + str(e))
 
