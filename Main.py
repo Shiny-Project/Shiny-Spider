@@ -34,8 +34,8 @@ def start_spiders():
             for spider in spider_list:
                 renew(spider["name"])
         else:
-            Logger.warning('没有已经定义的Spider')
-        time.sleep(30)
+            Logger.warning('当前任务列表为空')
+        time.sleep(15)
 
 
 def start_analyzer():
