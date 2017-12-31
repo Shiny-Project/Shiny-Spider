@@ -29,13 +29,13 @@ class CMAAlertSpider(spider.Spider):
                 if '解除' in item.attrs['title']:
                     self.record(3, {
                         "title": "CMA·全国级预警速报",
-                        "link": item.attrs['href'],
+                        "link": "http://www.nmc.cn" + item.attrs['href'],
                         "content": item.attrs['title']
                     })
                 else:
                     self.record(4, {
                         "title": "CMA·全国级预警速报",
-                        "link": item.attrs['href'],
+                        "link": "http://www.nmc.cn" + item.attrs['href'],
                         "content": item.attrs['title']
                     })
 
