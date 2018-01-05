@@ -1,5 +1,6 @@
 from core import spider
 from bs4 import BeautifulSoup
+import datetime
 
 
 def class_is_warning(css_class=[]):
@@ -23,20 +24,20 @@ class CMAAlertSpider(spider.Spider):
                 self.record(3, {
                     "title": "CMA·全国级预警速报",
                     "link": item.attrs['href'],
-                    "content": item.attrs['title']
+                    "content": item.attrs['title'] + str(datetime.datetime.now())
                 })
             if '橙色' in item.attrs['title'] or '红色' in item.attrs['title']:
                 if '解除' in item.attrs['title']:
                     self.record(3, {
                         "title": "CMA·全国级预警速报",
                         "link": "http://www.nmc.cn" + item.attrs['href'],
-                        "content": item.attrs['title']
+                        "content": item.attrs['title'] + str(datetime.datetime.now())
                     })
                 else:
                     self.record(4, {
                         "title": "CMA·全国级预警速报",
                         "link": "http://www.nmc.cn" + item.attrs['href'],
-                        "content": item.attrs['title']
+                        "content": item.attrs['title'] + str(datetime.datetime.now())
                     })
 
     def check(self, timestamp):
