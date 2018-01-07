@@ -23,7 +23,7 @@ class CMAAlertSpider(spider.Spider):
             if '蓝色' in item.attrs['title'] or '黄色' in item.attrs['title']:
                 self.record(3, {
                     "title": "CMA·全国级预警速报",
-                    "link": item.attrs['href'],
+                    "link": 'http://www.nmc.cn' + item.attrs['href'],
                     "content": item.attrs['title'] + '(' + datetime.datetime.today().strftime('%Y-%m-%d') + ')'
                 })
             if '橙色' in item.attrs['title'] or '红色' in item.attrs['title']:
