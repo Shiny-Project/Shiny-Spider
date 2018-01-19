@@ -24,6 +24,7 @@ class YouTubeRSSSpider(spider.Spider):
                 'UUmr9bYmymcBmQ1p2tLBRvwg',  # 欅坂46 OFFICIAL
                 'UUCy_q-N7F2FOIZ6ZggHIAKg',  # Sony Music (Japan)
                 'UUN-bFIdJM0gQlgX7h6LKcZA',  # バンドリちゃんねる☆ / BanG Dream! Channel
+                'UU1oPBUWifc0QOOY8DEKhLuQ',  # avex
                 ]
         for up in list:
             url = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=' + up + '&key=' + self.YOUTUBE_API_KEY
