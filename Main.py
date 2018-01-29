@@ -5,7 +5,6 @@ import core.meta as meta
 from core import utils
 from core.log import Log
 from core import config
-from core import analysis
 
 Logger = Log()
 Database = database.Database()
@@ -36,14 +35,6 @@ def start_spiders():
         else:
             Logger.warning('当前任务列表为空')
         time.sleep(15)
-
-
-def start_analyzer():
-    Logger.info('分析就绪')
-    while True:
-        analysis.analyze_all_events()
-        time.sleep(30)
-
 
 def main():
     # 初始化
@@ -86,11 +77,7 @@ def main():
 
         elif command in ['ignite', 'start', 'lift']:
             # 主程序启动
-            t1 = threading.Thread(target=start_analyzer, daemon=True)
-            t2 = threading.Thread(target=start_spiders, daemon=True)
-
-            t1.start()
-            t2.start()
+            start_spiders()
 
             while True:
                 time.sleep(1)
