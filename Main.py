@@ -28,6 +28,9 @@ def renew_by_path(job_id, spider_name, path):
         else:
             Logger.error('Spider : [ ' + spider_name + ' ] 刷新失败')
             Database.report_job_status(job_id, 'failed')
+    except Exception as e:
+        Logger.error('Spider : [ ' + spider_name + ' ] 刷新失败')
+        Database.report_job_status(job_id, 'failed')
 
 
 def show_version():

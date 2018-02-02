@@ -114,6 +114,6 @@ class Database():
         """ 报告任务状态 """
         try:
             response = shiny.report(job_id, status)
-            Logger.debug("回报任务状态 [ ID=" + str(job_id) + " = " + status + " ]")
+            Logger.debug("回报任务状态 [ ID " + str(job_id) + " = " + status + " ]")
         except Exception as e:
             Logger.error('回报任务状态失败' + str(e))
