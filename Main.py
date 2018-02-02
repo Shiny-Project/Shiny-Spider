@@ -1,4 +1,7 @@
-import json, sys, time, threading
+import json
+import sys
+import time
+import threading
 
 import core.database as database
 import core.meta as meta
@@ -11,32 +14,25 @@ Logger = Log()
 Database = database.Database()
 
 
-def renew(spider_name):
-    Logger.info('刷新 Spider : [ ' + spider_name + ' ] 数据')
-    try:
-        spider_path, spider_trigger_time, spider_info = Database.get_spider_info(spider_name)
-        Logger.debug('成功获得 Spider : [ ' + spider_name + ' ]的路径 : [ ' + spider_path + ' ]')
-        timestamp = utils.parse_time_string(spider_trigger_time)
-        spider = utils.load_spider(spider_path)
-        getattr(spider, spider_name + 'Spider')().main()  # 数据过期 执行抓取逻辑
-    except Exception as e:
-        Logger.error('抓取数据失败 [ Spider Name = ' + spider_name + ' ] : ' + str(e))
-
 def renew_by_path(job_id, spider_name, path):
     Logger.info('刷新 Spider : [ ' + spider_name + ' ] 数据')
     try:
         spider = utils.load_spider(path)
         getattr(spider, spider_name + 'Spider')().main()  # 执行抓取逻辑
+        Logger.info('Spider : [ ' + spider_name + ' ] 刷新成功')
+        Database.report_job_status(job_id, 'success')
     except ShinyError as e:
         if (e.code == 'duplicated_item'):
             Logger.debug('Spider : [ ' + spider_name + ' ] 无新数据')
             Database.report_job_status(job_id, 'success')
         else:
-            Logger.debug('Spider : [ ' + spider_name + ' ] 刷新失败')
+            Logger.error('Spider : [ ' + spider_name + ' ] 刷新失败')
             Database.report_job_status(job_id, 'failed')
+
 
 def show_version():
     print(meta.project + ' ' + meta.version)
+
 
 def start_spiders():
     Logger.info('爬虫就绪')
@@ -48,6 +44,7 @@ def start_spiders():
         else:
             Logger.warning('当前任务列表为空')
         time.sleep(15)
+
 
 def main():
     # 初始化
