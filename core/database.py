@@ -102,25 +102,18 @@ class Database():
         except Exception as e:
             Logger.error('无法从数据库取得数据' + str(e))
 
-
-
-
-    def renew_trigger_time(self, spider_name):
-        """更新Spider的调用次数和最后一次调用的时间"""
-        try:
-            response = self.session.query(Spider).filter(Spider.name == spider_name).one()
-            response.trigger_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-            response.trigger_count += 1
-            self.session.commit()
-            Logger.debug('更新 [ Spider = ' + spider_name + ' ] 的调用次数和时间')
-        except Exception as e:
-            Logger.error('无法更新Spider的调用时间 [ Spider = ' + spider_name + ' ] ')
-
-
-    def get_spider_list(self):
+    def get_job_list(self):
         """获得全部 Spider 列表"""
         try:
             response = shiny.get_jobs()
             return response["data"]
         except Exception as e:
             Logger.error('无法获得 Spider 列表' + str(e))
+    
+    def report_job_status(self, job_id, status):
+        """ 报告任务状态 """
+        try:
+            response = shiny.report(job_id, status)
+            return response["data"]
+        except Exception as e:
+            Logger.error('回报任务状态失败' + str(e))
