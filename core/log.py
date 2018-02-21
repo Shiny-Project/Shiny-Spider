@@ -18,50 +18,26 @@ class Log():
 
     def __init__(self):
         self.TIMEFORMAT = "%Y-%m-%d %X"
-        self.API = config.GRAYLOG_API
 
     def debug(self, text):
         """创建调试信息"""
-        threading.Thread(target=self.send_log, args=(6, text)).start()
         print('[DEBUG] [' + str(time.strftime(self.TIMEFORMAT, time.localtime())) + '] ' + text)
 
     def info(self, text):
         """创建提示信息"""
-        threading.Thread(target=self.send_log, args=(5, text)).start()
         print(bcolors.OKGREEN + '[INFO] [' + str(time.strftime(self.TIMEFORMAT, time.localtime())) + '] ' + text + bcolors.ENDC)
 
     def warning(self, text):
         """创建警告信息"""
-        threading.Thread(target=self.send_log, args=(4, text)).start()
         print(bcolors.WARNING + '[WARN] [' + str(time.strftime(self.TIMEFORMAT, time.localtime())) + '] ' + text + bcolors.ENDC)
 
     def error(self, text):
         """创建错误信息"""
-        threading.Thread(target=self.send_log, args=(3, text)).start()
         print(bcolors.FAIL + '[ERROR] [' + str(time.strftime(self.TIMEFORMAT, time.localtime())) + '] ' + text + bcolors.ENDC)
     
     def critical(self, text):
         """创建致命错误信息"""
-        threading.Thread(target=self.send_log, args=(2, text)).start()
         print(bcolors.FAIL + '[ERROR] [' + str(time.strftime(self.TIMEFORMAT, time.localtime())) + '] ' + text + bcolors.ENDC)
-
-    def send_log(self, level, text):
-        if config.DISABLE_LOG_REPORT:
-            return
-
-        data = {
-            "level": level,
-            "short_message": text,
-            "host": "Shiny-JP-Tokyo-1"
-        }
-        headers = {
-            'User-Agent': 'Shiny/0.1 (https://github.com/Shiny-Project/Shiny-README)'
-        }
-
-        try:
-            response = requests.post(self.API, data=json.dumps(data), headers=headers)
-        except Exception as e:
-            print(bcolors.FAIL + '\n在上报错误信息时出现错误: 无法连接到日志服务器\n' + text + bcolors.ENDC)
 
 if __name__ == '__main__':
     pass
