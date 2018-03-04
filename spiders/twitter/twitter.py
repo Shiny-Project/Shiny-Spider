@@ -41,7 +41,7 @@ class TwitterSpider(spider.Spider):
                 "content" : text,
                 "link" : "https://twitter.com/%s/status/%s" % (user, id),
                 "cover" : profile_image,
-                "hash": id
+                "hash": "%s" % (id,)
             }
 
             self.record(3, json_data) # record(level, data) data以dict格式
