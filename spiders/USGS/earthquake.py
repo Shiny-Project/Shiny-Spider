@@ -22,11 +22,15 @@ class USGSEarthquakeSpider(spider.Spider):
             link = latest.link.get('href')
             title = "USGS地震速报"
             content = latest.title.get_text()
+            location = latest.find('georss:point').get_text()
+            depth = latest.find('georss:elev').get_text()
             self.record(level - 3, {
                 "title": title,
                 "link": link,
                 "content": content,
-                "cover": ""
+                "cover": "",
+                "location": location,
+                "depth": depth
             })
 
 
