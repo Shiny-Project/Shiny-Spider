@@ -13,12 +13,11 @@ class ExampleSpider(spider.Spider):
             'content': self.fetch('http://wug.moe/').decode('utf-8'),
             'link': 'http://wug.moe'
         }
+        # 如果 data 中不含 hash 字段，则会自动根据 data 的内容计算一个
+        # 如果有，则采用
 
         self.record(1, data) # record(level, data) data以dict格式
 
-    def check(self, timestamp): # 这个函数可以不写
-        """检查数据是否过期(optional)，只修改内容，不修改函数名，返回布尔型"""
-        return self.check_expiration(timestamp, 5) # 快速判断数据是否过时，第二个参数的单位是秒
 
 
 if __name__ == '__main__':
