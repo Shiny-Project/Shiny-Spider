@@ -72,18 +72,19 @@ def main():
         # 命令行调用刷新API数据
         command = sys.argv[1]
         if command in ['renew']:
-            if len(sys.argv) >= 3:
-                spider_name = sys.argv[2]
-                renew(spider_name)
-            else:
-                # 参数缺失
-                print('''
-                    Parameter Missed
+            print('这个功能坏了')
+            # if len(sys.argv) >= 3:
+            #     spider_name = sys.argv[2]
+            #     renew_by_path(spider_name)
+            # else:
+            #     # 参数缺失
+            #     print('''
+            #         Parameter Missed
 
-                    Usage:
+            #         Usage:
 
-                    Main.py renew <api_id>
-                ''')
+            #         Main.py renew <api_id>
+            #     ''')
         elif command in ['-version', '--version', 'version']:
             # 显示版本号
             show_version()
