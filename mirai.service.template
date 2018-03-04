@@ -4,8 +4,10 @@ After=network.target
 
 [Service]
 Type=simple
-#用实际路径替换下面的{%path%}
-ExecStart=/usr/bin/python {%path%}/Main.py ignite
+Environment="LC_ALL=zh_CN.UTF-8"
+# 用实际路径替换下面的{%path%}和{%python35%}
+WorkingDirectory={%path%}
+ExecStart={%python35%} {%path%}/Main.py ignite
 Restart=always
 
 [Install]
@@ -13,5 +15,5 @@ WantedBy=multi-user.target
 
 # 安装步骤：
 # 1. 将本文件建立一个副本，命名为mirai.service，并根据实际物理路径替换{%path%}部分。
-# 2. 将mirai.service链接到/etc/systemd/system【ln -s mirai.service /etc/systemd/system】
+# 2. 将mirai.service链接到/etc/systemd/system【ln {%path%}/mirai.service /etc/systemd/system】
 # 3. 执行systemctl daemon-reload
