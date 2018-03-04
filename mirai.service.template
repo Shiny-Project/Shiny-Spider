@@ -12,6 +12,6 @@ Restart=always
 WantedBy=multi-user.target
 
 # 安装步骤：
-# 1. 将本文件建立一个副本，命名为mirai.services，并根据实际物理路径替换{%path%}部分。
-# 2. 将mirai.services链接到/etc/systemd/system
+# 1. 将本文件建立一个副本，命名为mirai.service，并根据实际物理路径替换{%path%}部分。
+# 2. 将mirai.service链接到/etc/systemd/system【ln -s mirai.service /etc/systemd/system】
 # 3. 执行systemctl daemon-reload
