@@ -1,5 +1,5 @@
 # Project Shiny
-# Let Data Flows
+# Let Data Flow
 
-project = 'Mirai'
-version = '0.2'
+project = 'Shiny'
+version = '0.3'

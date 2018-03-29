@@ -15,15 +15,12 @@ class Spider():
     name = 'Spider'
 
     def fetch(self, url):
-        try:
-            Logger.debug(u'试图抓取页面 [ URL = ' + url + ' ]')
-            req = request.Request(url)
-            req.add_header('User-Agent', 'Shiny/0.1 (https://github.com/Shiny-Project/Shiny-README)')
-            response = request.urlopen(req, timeout=10)
-            Logger.debug('抓取页面 [ URL = ' + url + ' ]成功')
-            return response.read()
-        except Exception as e:
-            Logger.error('抓取页面 [ URL = ' + url + ' ]错误:' + str(e))
+        Logger.debug(u'试图抓取页面 [ URL = ' + url + ' ]')
+        req = request.Request(url)
+        req.add_header('User-Agent', 'Shiny/0.1 (https://github.com/Shiny-Project/Shiny-README)')
+        response = request.urlopen(req, timeout=10)
+        Logger.debug('抓取页面 [ URL = ' + url + ' ]成功')
+        return response.read()
 
     def record(self, level, data):
         if 'hash' in data:
