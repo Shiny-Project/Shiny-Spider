@@ -1,6 +1,6 @@
 from core import spider
 from bs4 import BeautifulSoup
-import datetime
+import datetime, pytz
 
 
 def class_is_warning(css_class=[]):
@@ -24,20 +24,20 @@ class CMAAlertSpider(spider.Spider):
                 self.record(3, {
                     "title": "CMA·全国级预警速报",
                     "link": 'http://www.nmc.cn' + item.attrs['href'],
-                    "content": item.attrs['title'] + '(' + datetime.datetime.today().strftime('%Y-%m-%d') + ')'
+                    "content": item.attrs['title'] + '(' + pytz.timezone('Asia/Shanghai').localize(datetime.datetime.now()).strftime('%Y-%m-%d') + ')'
                 })
             if '橙色' in item.attrs['title'] or '红色' in item.attrs['title']:
                 if '解除' in item.attrs['title']:
                     self.record(3, {
                         "title": "CMA·全国级预警速报",
                         "link": "http://www.nmc.cn" + item.attrs['href'],
-                        "content": item.attrs['title'] + '(' + datetime.datetime.today().strftime('%Y-%m-%d') + ')'
+                        "content": item.attrs['title'] + '(' + pytz.timezone('Asia/Shanghai').localize(datetime.datetime.now()).strftime('%Y-%m-%d') + ')'
                     })
                 else:
                     self.record(4, {
                         "title": "CMA·全国级预警速报",
                         "link": "http://www.nmc.cn" + item.attrs['href'],
-                        "content": item.attrs['title'] + '(' + datetime.datetime.today().strftime('%Y-%m-%d') + ')'
+                        "content": item.attrs['title'] + '(' + pytz.timezone('Asia/Shanghai').localize(datetime.datetime.now()).strftime('%Y-%m-%d') + ')'
                     })
 
     def check(self, timestamp):

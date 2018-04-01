@@ -1,4 +1,4 @@
-import datetime
+import datetime, pytz
 import math
 import time
 import copy
@@ -140,7 +140,7 @@ class RadarSpider(spider.Spider):
         if len(warning_cities) > 0:
             # 生成警告事件
             warning_text = "请下列地区注意可能到来的强对流天气:\r\n" + " ".join(warning_cities) + "。"
-            warning_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H')
+            warning_time = pytz.timezone('Asia/Shanghai').localize(datetime.datetime.now()).strftime('%Y-%m-%d %H')
             warning_hour = math.floor(int(warning_time.split(' ')[1]) / 6)
             warning_time = warning_time.split(' ')[0] + '#P' + str(warning_hour)
 
@@ -152,7 +152,7 @@ class RadarSpider(spider.Spider):
 
         if len(special_warning_cities) > 0:
             warning_text = "下列地区检测到强雷达回波，请注意防范龙卷风、冰雹等气象灾害:\r\n" + " ".join(special_warning_cities) + "。"
-            warning_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H')
+            warning_time = pytz.timezone('Asia/Shanghai').localize(datetime.datetime.now()).strftime('%Y-%m-%d %H')
             warning_hour = math.floor(int(warning_time.split(' ')[1]) / 6)
             warning_time = warning_time.split(' ')[0] + '#P' + str(warning_hour)
 
