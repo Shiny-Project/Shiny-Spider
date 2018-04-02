@@ -14,7 +14,7 @@ Logger = Log()
 Database = database.Database()
 
 
-def renew_by_path(job_id, spider_name, path):
+def renew(job_id, spider_name, path):
     Logger.info('刷新 Spider : [ ' + spider_name + ' ] 数据')
     try:
         spider = utils.load_spider(path)
@@ -32,6 +32,21 @@ def renew_by_path(job_id, spider_name, path):
         Logger.error('Spider : [ ' + spider_name + ' ] 刷新失败: ' + str(e))
         Database.report_job_status(job_id, 'failed')
 
+def renew_by_path(path, spider_name):
+    Logger.info('刷新 Spider / Path = [ ' + path + ' ] 数据')
+    Logger.warning('手动刷新不会刷新任务分发列表 亦不会反馈状态 但新数据仍被广播')
+    try:
+        spider = utils.load_spider(path)
+        getattr(spider, spider_name + 'Spider')().main()  # 执行抓取逻辑
+        Logger.info('Spider / Path = [ ' + path + ' ] 刷新成功')
+    except ShinyError as e:
+        if (e.code == 'duplicated_item'):
+            Logger.debug('Spider : [ ' + spider_name + ' ] 无新数据')
+        else:
+            Logger.error('Spider : [ ' + spider_name + ' ] 刷新失败: ' + str(e))
+    except Exception as e:
+        Logger.error('Spider : [ ' + spider_name + ' ] 刷新失败: ' + str(e))
+
 
 def show_version():
     print(meta.project + ' ' + meta.version)
@@ -43,7 +58,7 @@ def start_spiders():
         job_list = Database.get_job_list()
         if job_list:
             for job in job_list:
-                renew_by_path(job["id"], job["spider"], job["path"])
+                renew(job["id"], job["spider"], job["path"])
         else:
             Logger.warning('当前任务列表为空')
         time.sleep(15)
@@ -60,7 +75,7 @@ def main():
 
             Command:
 
-            renew <spider_name> : call a specified spider
+            renew <spider_path> <spider_name> : call a specified spider
 
             ignite : start main progress
 
@@ -72,19 +87,19 @@ def main():
         # 命令行调用刷新API数据
         command = sys.argv[1]
         if command in ['renew']:
-            print('这个功能坏了')
-            # if len(sys.argv) >= 3:
-            #     spider_name = sys.argv[2]
-            #     renew_by_path(spider_name)
-            # else:
-            #     # 参数缺失
-            #     print('''
-            #         Parameter Missed
+            if len(sys.argv) >= 4:
+                spider_path = sys.argv[2]
+                spider_name = sys.argv[3]
+                renew_by_path(spider_path, spider_name)
+            else:
+                # 参数缺失
+                print('''
+                    Parameter Missed
 
-            #         Usage:
+                    Usage:
 
-            #         Main.py renew <api_id>
-            #     ''')
+                    Main.py renew <spider_path> <spider_name>
+                ''')
         elif command in ['-version', '--version', 'version']:
             # 显示版本号
             show_version()
