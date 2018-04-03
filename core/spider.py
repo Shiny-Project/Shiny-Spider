@@ -27,7 +27,7 @@ class Spider():
 
     async def generate_fetch_tasks(self, url, session):
         async with session.get(url) as response:
-            return await response.read()
+            return await response.text()
 
     async def do_fetch_tasks(self, urls):
         async with ClientSession() as session:
