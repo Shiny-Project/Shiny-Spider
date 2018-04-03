@@ -11,8 +11,6 @@ from core import config
 from Shiny import ShinyError
 
 Logger = Log()
-Database = database.Database()
-
 
 def renew(job_id, spider_name, path):
     Logger.info('刷新 Spider : [ ' + spider_name + ' ] 数据')
@@ -20,17 +18,17 @@ def renew(job_id, spider_name, path):
         spider = utils.load_spider(path)
         getattr(spider, spider_name + 'Spider')().main()  # 执行抓取逻辑
         Logger.info('Spider : [ ' + spider_name + ' ] 刷新成功')
-        Database.report_job_status(job_id, 'success')
+        database.report_job_status(job_id, 'success')
     except ShinyError as e:
         if (e.code == 'duplicated_item'):
             Logger.debug('Spider : [ ' + spider_name + ' ] 无新数据')
-            Database.report_job_status(job_id, 'success')
+            database.report_job_status(job_id, 'success')
         else:
             Logger.error('Spider : [ ' + spider_name + ' ] 刷新失败: ' + str(e))
-            Database.report_job_status(job_id, 'failed')
+            database.report_job_status(job_id, 'failed')
     except Exception as e:
         Logger.error('Spider : [ ' + spider_name + ' ] 刷新失败: ' + str(e))
-        Database.report_job_status(job_id, 'failed')
+        database.report_job_status(job_id, 'failed')
 
 def renew_by_path(path, spider_name):
     Logger.info('刷新 Spider / Path = [ ' + path + ' ] 数据')
@@ -55,7 +53,7 @@ def show_version():
 def start_spiders():
     Logger.info('爬虫就绪')
     while True:
-        job_list = Database.get_job_list()
+        job_list = database.get_job_list()
         if job_list:
             for job in job_list:
                 renew(job["id"], job["spider"], job["path"])
