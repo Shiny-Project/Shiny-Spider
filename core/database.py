@@ -1,12 +1,9 @@
 # Shiny 数据库通讯
 
-import datetime
 import hashlib
-import time
 import json
 
 import core.config as config
-from core import utils
 from core.log import Log
 
 import Shiny
@@ -27,15 +24,25 @@ def create_event(level, data, name, hash):
         hash = m.hexdigest()
 
     try:
-        try:
-            shiny.add(name, level, data, hash=hash)
-            Logger.info(
-                '[ Spider = ' + name + ' ] 数据已经提交 [ Hash = ' + hash + ' ]')
-        except Shiny.ShinyError as e:
-            Logger.error('无法向Shiny提交数据:' + str(e))
-
+        shiny.add(name, level, data, hash=hash)
+        Logger.info(
+            '[ Spider = ' + name + ' ] 数据已经提交 [ Hash = ' + hash + ' ]')
+    except Shiny.ShinyError as e:
+        Logger.error('无法向Shiny提交数据:' + str(e))
     except Exception as e:
         Logger.error('无法记录数据' + str(e))
+
+
+def create_event_many(events):
+    """记录多个数据"""
+    try:
+        shiny.add_many(events)
+        Logger.info("多个事件数据已经提交")
+    except Shiny.ShinyError as e:
+        Logger.error("无法向 Shiny 提交数据 / 网络错误" + str(e))
+    except Exception as e:
+        Logger.error("无法向 Shiny 提交数据" + str(e))
+
 
 def get_job_list():
     """获得全部 Spider 列表"""
@@ -44,6 +51,7 @@ def get_job_list():
         return response["data"]
     except Exception as e:
         Logger.error('无法获得 Spider 列表' + str(e))
+
 
 def report_job_status(job_id, status):
     """ 报告任务状态 """

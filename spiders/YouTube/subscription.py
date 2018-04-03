@@ -1,12 +1,14 @@
-from core import spider,config
+from core import spider, config
 from bs4 import BeautifulSoup
-import time,json
+import time
+import json
+
 
 class YouTubeRSSSpider(spider.Spider):
     def __init__(self):
         super(YouTubeRSSSpider, self).__init__()  # 仅修改类名，不要修改其他
         self.name = 'YouTubeRSS'  # 声明Spider名，要和类名里的一样
-        
+
         if config.YOUTUBE_API_KEY:
             self.YOUTUBE_API_KEY = config.YOUTUBE_API_KEY
         else:
@@ -26,21 +28,28 @@ class YouTubeRSSSpider(spider.Spider):
                 'UUN-bFIdJM0gQlgX7h6LKcZA',  # バンドリちゃんねる☆ / BanG Dream! Channel
                 'UU1oPBUWifc0QOOY8DEKhLuQ',  # avex
                 ]
+        tasks = []
+        events = []
         for up in list:
-            url = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=' + up + '&key=' + self.YOUTUBE_API_KEY
-            text = self.fetch(url).decode('utf-8')
-            res = json.loads(text)
+            tasks.append('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={}&key={}'.format(
+                up, self.YOUTUBE_API_KEY
+            ))
+            results = self.fetch_many(tasks)
+        for result in results:
+            res = json.loads(result)
             for item in res["items"]:
                 title = item["snippet"]["title"]
                 cover = item["snippet"]["thumbnails"]["default"]["url"]
                 description = item["snippet"]["description"]
-                link = "https://www.youtube.com/watch?v=" + item["snippet"]["resourceId"]["videoId"]
-                self.record(3, {
+                link = "https://www.youtube.com/watch?v=" + \
+                    item["snippet"]["resourceId"]["videoId"]
+                events.append({
                     "title": title,
                     "link": link,
                     "content": description,
                     "cover": cover
                 })
+        self.record_many(3, events)
 
     def check(self, timestamp):  # 这个函数可以不写
         """检查数据是否过期(optional)，只修改内容，不修改函数名，返回布尔型"""

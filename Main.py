@@ -1,7 +1,5 @@
-import json
 import sys
 import time
-import threading
 
 import core.database as database
 import core.meta as meta
