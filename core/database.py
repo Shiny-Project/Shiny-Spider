@@ -36,8 +36,8 @@ def create_event(level, data, name, hash):
 def create_event_many(events):
     """记录多个数据"""
     try:
-        shiny.add_many(events)
-        Logger.info("多个事件数据已经提交")
+        result = shiny.add_many(events)
+        Logger.info("多个事件数据已经提交 其中 {}/{} 是新事件已被记录".format(len(result["data"]), len(events)))
     except Shiny.ShinyError as e:
         Logger.error("无法向 Shiny 提交数据 / 网络错误" + str(e))
     except Exception as e:

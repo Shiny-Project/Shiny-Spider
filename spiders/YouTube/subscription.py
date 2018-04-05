@@ -34,7 +34,7 @@ class YouTubeRSSSpider(spider.Spider):
             tasks.append('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={}&key={}'.format(
                 up, self.YOUTUBE_API_KEY
             ))
-            results = self.fetch_many(tasks)
+        results = self.fetch_many(tasks)
         for result in results:
             res = json.loads(result)
             for item in res["items"]:

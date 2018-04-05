@@ -33,6 +33,7 @@ class Spider():
         async with ClientSession() as session:
             tasks = []
             for i in urls:
+                Logger.debug(u'试图抓取页面 [ URL = ' + i + ' ]')
                 tasks.append(asyncio.ensure_future(
                     self.generate_fetch_tasks(i, session)))
             return await asyncio.gather(*tasks)
