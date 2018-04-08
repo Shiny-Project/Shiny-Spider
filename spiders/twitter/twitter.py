@@ -16,10 +16,11 @@ class TwitterSpider(spider.Spider):
         # 将待监控的twitter id增加在下面
         self.process(api, "LoveLive_staff") #LL
         self.process(api, "wakeupgirls_PR") #wug
+        self.process(api, 'akane_fujikawa') #藤川茜
 
     def process(self, api, name, count=5):
         status = api.user_timeline(name, count=count)
-
+        events = []
         for tweet in status:
             id = tweet.id
             text = tweet.text
@@ -44,7 +45,9 @@ class TwitterSpider(spider.Spider):
                 "hash": "%s" % (id,)
             }
 
-            self.record(3, json_data) # record(level, data) data以dict格式
+            events.append(json_data)
+
+        self.record_many(3, events) 
 
 
 
