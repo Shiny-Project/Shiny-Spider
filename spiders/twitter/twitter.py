@@ -42,7 +42,6 @@ class TwitterSpider(spider.Spider):
                 "content" : text,
                 "link" : "https://twitter.com/%s/status/%s" % (user, id),
                 "cover" : profile_image,
-                "hash": "%s" % (id,)
             }
 
             events.append(json_data)
