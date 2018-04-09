@@ -8,7 +8,7 @@ class FloodSpider(spider.Spider):
 
     def __init__(self):
         super(FloodSpider, self).__init__()
-        self.name = 'FloodSpider'
+        self.name = 'Flood'
 
     def main(self):
         data = json.loads(requests.post(

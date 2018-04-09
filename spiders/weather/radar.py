@@ -20,7 +20,7 @@ class RadarSpider(spider.Spider):
 
     def __init__(self):
         super(RadarSpider, self).__init__()
-        self.name = 'RadarSpider'
+        self.name = 'Radar'
 
     def main(self):
         response = self.fetch('http://www.nmc.cn/publish/radar/huadong.html').decode('utf-8')

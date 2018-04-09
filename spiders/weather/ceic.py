@@ -7,7 +7,7 @@ class CEICSpider(spider.Spider):
 
     def __init__(self):
         super(CEICSpider, self).__init__()
-        self.name = 'CEICSpider'
+        self.name = 'CEIC'
 
     def main(self):
         result = self.fetch(

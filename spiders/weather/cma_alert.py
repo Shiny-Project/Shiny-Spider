@@ -14,7 +14,7 @@ class CMAAlertSpider(spider.Spider):
 
     def __init__(self):
         super(CMAAlertSpider, self).__init__()
-        self.name = 'CMAAlertSpider'
+        self.name = 'CMAAlert'
 
     def main(self):
         result = self.fetch("http://www.nmc.cn/").decode('utf-8')

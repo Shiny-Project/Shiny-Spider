@@ -7,7 +7,7 @@ class AlertSpider(spider.Spider):
 
     def __init__(self):
         super(AlertSpider, self).__init__()
-        self.name = 'AlertSpider'
+        self.name = 'Alert'
 
     def main(self):
         result = self.fetch("http://www.12379.cn/data/alarm_list_all.html?_=" + str(int(time.time())) ).decode("utf-8")
