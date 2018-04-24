@@ -45,6 +45,7 @@ class YouTubeRSSSpider(spider.Spider):
                     item["snippet"]["resourceId"]["videoId"]
                 events.append({
                     "title": title,
+                    "channel": item["snippet"]["channelId"],
                     "link": link,
                     "content": description,
                     "cover": cover

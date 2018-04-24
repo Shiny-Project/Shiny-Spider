@@ -53,11 +53,15 @@ class Spider():
     def record_many(self, level, events):
         payload = []
         for event in events:
-            payload.append({
+            wrappedEvent = {
                 "level": level,
                 "spiderName": self.name,
                 "data": event
-            })
+            }
+            if 'channel' in event:
+                wrappedEvent['channel'] = event['channel']
+                event.pop('channel')
+            payload.append(wrappedEvent)
         database.create_event_many(payload)
 
     @staticmethod

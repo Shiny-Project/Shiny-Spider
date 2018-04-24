@@ -39,6 +39,7 @@ class TwitterSpider(spider.Spider):
             json_data = {
                 "title" : "【%s】正在发推" % (name,),
                 "content" : text,
+                "channel": name,
                 "link" : "https://twitter.com/%s/status/%s" % (user, id),
                 "cover" : profile_image,
             }
