@@ -19,26 +19,28 @@ class CMAAlertSpider(spider.Spider):
     def main(self):
         result = self.fetch("http://www.nmc.cn/").decode('utf-8')
         soup = BeautifulSoup(result)
-        for item in soup.find_all('li', class_='waring')[0].find_all('a'):
-            if '蓝色' in item.attrs['title'] or '黄色' in item.attrs['title']:
-                self.record(3, {
-                    "title": "CMA·全国级预警速报",
-                    "link": 'http://www.nmc.cn' + item.attrs['href'],
-                    "content": item.attrs['title'] + '(' + pytz.timezone('Asia/Shanghai').localize(datetime.datetime.now()).strftime('%Y-%m-%d') + ')'
-                })
-            if '橙色' in item.attrs['title'] or '红色' in item.attrs['title']:
-                if '解除' in item.attrs['title']:
+        warning_list = soup.find_all('li', class_='waring')
+        if len(warning_list) > 0:
+            for item in soup.find_all('li', class_='waring')[0].find_all('a'):
+                if '蓝色' in item.attrs['title'] or '黄色' in item.attrs['title']:
                     self.record(3, {
                         "title": "CMA·全国级预警速报",
-                        "link": "http://www.nmc.cn" + item.attrs['href'],
+                        "link": 'http://www.nmc.cn' + item.attrs['href'],
                         "content": item.attrs['title'] + '(' + pytz.timezone('Asia/Shanghai').localize(datetime.datetime.now()).strftime('%Y-%m-%d') + ')'
                     })
-                else:
-                    self.record(4, {
-                        "title": "CMA·全国级预警速报",
-                        "link": "http://www.nmc.cn" + item.attrs['href'],
-                        "content": item.attrs['title'] + '(' + pytz.timezone('Asia/Shanghai').localize(datetime.datetime.now()).strftime('%Y-%m-%d') + ')'
-                    })
+                if '橙色' in item.attrs['title'] or '红色' in item.attrs['title']:
+                    if '解除' in item.attrs['title']:
+                        self.record(3, {
+                            "title": "CMA·全国级预警速报",
+                            "link": "http://www.nmc.cn" + item.attrs['href'],
+                            "content": item.attrs['title'] + '(' + pytz.timezone('Asia/Shanghai').localize(datetime.datetime.now()).strftime('%Y-%m-%d') + ')'
+                        })
+                    else:
+                        self.record(4, {
+                            "title": "CMA·全国级预警速报",
+                            "link": "http://www.nmc.cn" + item.attrs['href'],
+                            "content": item.attrs['title'] + '(' + pytz.timezone('Asia/Shanghai').localize(datetime.datetime.now()).strftime('%Y-%m-%d') + ')'
+                        })
 
     def check(self, timestamp):
         return self.check_expiration(timestamp, 180)

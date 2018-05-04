@@ -17,8 +17,11 @@ class ExampleSpider(spider.Spider):
         response = self.fetch(url)
         html = BeautifulSoup(response, "html.parser", from_encoding="utf-8")
         node = html.find(attrs={"id": 'ctl00_ContentBody_newsContent'})
-        data = dict(forecast=node.text)
-        result = self.createEvent(data)
+        result = self.record(3, {
+            "title": 'xxxx',
+            "content": node.text,
+            "link": 'zzz'
+        })
 
 
 if __name__ == '__main__':
