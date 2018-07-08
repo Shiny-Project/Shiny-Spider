@@ -5,7 +5,7 @@ import json
 
 import core.config as config
 from core.log import Log
-import meta
+from core import meta
 
 import Shiny
 
