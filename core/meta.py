@@ -2,4 +2,4 @@
 # Let Data Flow
 
 project = 'Shiny'
-version = '0.3'
+version = '1.1'

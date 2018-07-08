@@ -5,11 +5,12 @@ import json
 
 import core.config as config
 from core.log import Log
+import meta
 
 import Shiny
 
 # Shiny SDK
-shiny = Shiny.Shiny(config.API_KEY, config.API_SECRET_KEY)
+shiny = Shiny.Shiny(config.API_KEY, config.API_SECRET_KEY, spider_version=meta.version)
 
 # 创建日志类
 Logger = Log()
