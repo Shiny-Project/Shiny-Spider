@@ -3,8 +3,8 @@ from lxml import etree
 
 
 class LLSSNewsSpider(spider.Spider):
-    def __init__(self):
-        super(LLSSNewsSpider, self).__init__()  # 仅修改类名，不要修改其他
+    def __init__(self, info={}):
+        super(LLSSNewsSpider, self).__init__(info)  # 仅修改类名，不要修改其他
         self.name = 'LLSSNews'  # 声明Spider名，要和类名里的一样
 
     def main(self):

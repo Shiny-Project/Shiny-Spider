@@ -15,6 +15,11 @@ Logger = Log()
 class Spider():
     """抓取和处理数据"""
     name = 'Spider'
+    identity = {}
+
+    def __init__(self, info = {}):
+        if 'identity' in info:
+            self.identity = info['identity']
 
     def fetch(self, url):
         Logger.debug(u'试图抓取页面 [ URL = ' + url + ' ]')

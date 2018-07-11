@@ -10,7 +10,7 @@ from core import meta
 import Shiny
 
 # Shiny SDK
-shiny = Shiny.Shiny(config.API_KEY, config.API_SECRET_KEY, spider_version=meta.version)
+shiny = Shiny.Shiny(config.API_KEY, config.API_SECRET_KEY, spider_version=meta.version, api_host='http://localhost:1337')
 
 # 创建日志类
 Logger = Log()

@@ -5,8 +5,8 @@ import json, time
 class AlertSpider(spider.Spider):
     """全国预警定点监控"""
 
-    def __init__(self):
-        super(AlertSpider, self).__init__()
+    def __init__(self, info={}):
+        super(AlertSpider, self).__init__(info)
         self.name = 'Alert'
 
     def main(self):

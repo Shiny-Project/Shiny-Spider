@@ -12,8 +12,8 @@ def class_is_warning(css_class=[]):
 class CMAAlertSpider(spider.Spider):
     """CMA预警速报"""
 
-    def __init__(self):
-        super(CMAAlertSpider, self).__init__()
+    def __init__(self, info={}):
+        super(CMAAlertSpider, self).__init__(info)
         self.name = 'CMAAlert'
 
     def main(self):

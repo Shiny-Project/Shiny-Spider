@@ -3,14 +3,31 @@ import tweepy
 
 
 class TwitterSpider(spider.Spider):
-    def __init__(self):
-        super(TwitterSpider, self).__init__()  # 仅修改类名，不要修改其他
+    def __init__(self, info={}):
+        super(TwitterSpider, self).__init__(info)  # 仅修改类名，不要修改其他
         self.name = 'Twitter'  # 声明Spider名，要和类名里的一样
 
     def main(self):
         """主抓取逻辑，只修改内容，不修改函数名"""
-        auth = tweepy.OAuthHandler(config.TWITTER_CONSUMER_KEY, config.TWITTER_CONSUMER_SECRET)
-        auth.set_access_token(config.TWITTER_ACCESS_TOKEN, config.TWITTER_ACCESS_SECRET)
+        if 'CONSUMER_KEY' in self.identity:
+            self.CONSUMER_KEY = self.identity['CONSUMER_KEY']
+        else:
+            raise Exception('CONSUMER_KEY 未指定.')
+        if 'CONSUMER_SECRET' in self.identity:
+            self.CONSUMER_SECRET = self.identity['CONSUMER_SECRET']
+        else:
+            raise Exception('CONSUMER_SECRET 未指定.')
+        if 'ACCESS_TOKEN' in self.identity:
+            self.ACCESS_TOKEN = self.identity['ACCESS_TOKEN']
+        else:
+            raise Exception('ACCESS_TOKEN 未指定.')
+        if 'ACCESS_SECRET' in self.identity:
+            self.ACCESS_SECRET = self.identity['ACCESS_SECRET']
+        else:
+            raise Exception('ACCESS_SECRET 未指定.')
+        
+        auth = tweepy.OAuthHandler(self.CONSUMER_KEY, self.CONSUMER_SECRET)
+        auth.set_access_token(self.ACCESS_TOKEN, self.ACCESS_SECRET)
 
         api = tweepy.API(auth)
         # 将待监控的twitter id增加在下面

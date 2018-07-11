@@ -10,11 +10,11 @@ from Shiny import ShinyError
 
 Logger = Log()
 
-def renew(job_id, spider_name, path):
+def renew(job_id, spider_name, path, info = {}):
     Logger.info('刷新 Spider : [ ' + spider_name + ' ] 数据')
     try:
         spider = utils.load_spider(path)
-        getattr(spider, spider_name + 'Spider')().main()  # 执行抓取逻辑
+        getattr(spider, spider_name + 'Spider')(info).main()  # 执行抓取逻辑
         Logger.info('Spider : [ ' + spider_name + ' ] 刷新成功')
         database.report_job_status(job_id, 'success')
     except ShinyError as e:
@@ -54,7 +54,7 @@ def start_spiders():
         job_list = database.get_job_list()
         if job_list:
             for job in job_list:
-                renew(job["id"], job["spider"], job["path"])
+                renew(job["id"], job["spider"], job["path"], info=job["info"])
         else:
             Logger.warning('当前任务列表为空')
         time.sleep(15)

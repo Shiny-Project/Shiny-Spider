@@ -5,8 +5,8 @@ from bs4 import BeautifulSoup
 # fripSide新闻监视
 class fripSideSpider(spider.Spider):
 
-    def __init__(self):
-        super(fripSideSpider, self).__init__()  # 仅修改类名，不要修改其他
+    def __init__(self, info={}):
+        super(fripSideSpider, self).__init__(info)  # 仅修改类名，不要修改其他
         self.name = 'fripSide'  # 声明Spider名，要和类名里的一样
 
     def main(self):

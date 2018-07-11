@@ -18,8 +18,8 @@ def in_area(point, area):
 class RadarSpider(spider.Spider):
     """华东地区雷达监视"""
 
-    def __init__(self):
-        super(RadarSpider, self).__init__()
+    def __init__(self, info={}):
+        super(RadarSpider, self).__init__(info)
         self.name = 'Radar'
 
     def main(self):

@@ -5,8 +5,8 @@ import json
 class CEICSpider(spider.Spider):
     """中国地震台网"""
 
-    def __init__(self):
-        super(CEICSpider, self).__init__()
+    def __init__(self, info={}):
+        super(CEICSpider, self).__init__(info)
         self.name = 'CEIC'
 
     def main(self):

@@ -6,8 +6,8 @@ import requests
 class FloodSpider(spider.Spider):
     """中国水利部水文情报预报中心"""
 
-    def __init__(self):
-        super(FloodSpider, self).__init__()
+    def __init__(self, info={}):
+        super(FloodSpider, self).__init__(info)
         self.name = 'Flood'
 
     def main(self):

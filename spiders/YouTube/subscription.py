@@ -1,16 +1,16 @@
-from core import spider, config
+from core import spider
 from bs4 import BeautifulSoup
 import time
 import json
 
 
 class YouTubeRSSSpider(spider.Spider):
-    def __init__(self):
-        super(YouTubeRSSSpider, self).__init__()  # 仅修改类名，不要修改其他
+    def __init__(self, info={}):
+        super(YouTubeRSSSpider, self).__init__(info)  # 仅修改类名，不要修改其他
         self.name = 'YouTubeRSS'  # 声明Spider名，要和类名里的一样
 
-        if config.YOUTUBE_API_KEY:
-            self.YOUTUBE_API_KEY = config.YOUTUBE_API_KEY
+        if 'API_KEY' in self.identity:
+            self.YOUTUBE_API_KEY = self.identity['API_KEY']
         else:
             raise Exception('YOUTUBE_API_KEY 未指定.')
 
