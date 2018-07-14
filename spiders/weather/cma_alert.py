@@ -223,7 +223,8 @@ class CMAAlertSpider(spider.Spider):
                             "link": 'http://www.nmc.cn' + item.attrs['href'],
                             "content": item.attrs['title'] + '(' + datetime.datetime.fromtimestamp(int(time.time()), tz).strftime('%Y-%m-%d') + ')',
                             "cover": self.parse_alert(alert_name)["icon"],
-                            "description": self.parse_alert(alert_name)["description"]
+                            "description": self.parse_alert(alert_name)["description"],
+                            "alertName": alert_name
                         })
                     if '橙色' in item.attrs['title'] or '红色' in item.attrs['title']:
                         alert_name = re.search('发布(.+)预警', item.attrs['title'])
@@ -235,7 +236,8 @@ class CMAAlertSpider(spider.Spider):
                                 "link": "http://www.nmc.cn" + item.attrs['href'],
                                 "content": item.attrs['title'] + '(' + datetime.datetime.fromtimestamp(int(time.time()), tz).strftime('%Y-%m-%d') + ')',
                                 "cover": self.parse_alert(alert_name)["icon"],
-                                "description": self.parse_alert(alert_name)["description"]
+                                "description": self.parse_alert(alert_name)["description"],
+                                "alertName": alert_name
                             })
                         else:
                             self.record(4, {
@@ -243,7 +245,8 @@ class CMAAlertSpider(spider.Spider):
                                 "link": "http://www.nmc.cn" + item.attrs['href'],
                                 "content": item.attrs['title'] + '(' + datetime.datetime.fromtimestamp(int(time.time()), tz).strftime('%Y-%m-%d') + ')',
                                 "cover": self.parse_alert(alert_name)["icon"],
-                                "description": self.parse_alert(alert_name)["description"]
+                                "description": self.parse_alert(alert_name)["description"],
+                                "alertName": alert_name
                             })
 
     def check(self, timestamp):
