@@ -222,9 +222,9 @@ class CMAAlertSpider(spider.Spider):
                             "title": "CMA·全国级预警速报",
                             "link": 'http://www.nmc.cn' + item.attrs['href'],
                             "content": item.attrs['title'] + '(' + datetime.datetime.fromtimestamp(int(time.time()), tz).strftime('%Y-%m-%d') + ')',
-                            "cover": self.parse_alert(alert_name)["icon"],
-                            "description": self.parse_alert(alert_name)["description"],
-                            "alertName": alert_name
+                            "cover": self.parse_alert(alert_name[1])["icon"],
+                            "description": self.parse_alert(alert_name[1])["description"],
+                            "alertName": alert_name[1]
                         })
                     if '橙色' in item.attrs['title'] or '红色' in item.attrs['title']:
                         alert_name = re.search('发布(.+)预警', item.attrs['title'])
@@ -235,18 +235,18 @@ class CMAAlertSpider(spider.Spider):
                                 "title": "CMA·全国级预警速报",
                                 "link": "http://www.nmc.cn" + item.attrs['href'],
                                 "content": item.attrs['title'] + '(' + datetime.datetime.fromtimestamp(int(time.time()), tz).strftime('%Y-%m-%d') + ')',
-                                "cover": self.parse_alert(alert_name)["icon"],
-                                "description": self.parse_alert(alert_name)["description"],
-                                "alertName": alert_name
+                                "cover": self.parse_alert(alert_name[1])["icon"],
+                                "description": self.parse_alert(alert_name[1])["description"],
+                                "alertName": alert_name[1]
                             })
                         else:
                             self.record(4, {
                                 "title": "CMA·全国级预警速报",
                                 "link": "http://www.nmc.cn" + item.attrs['href'],
                                 "content": item.attrs['title'] + '(' + datetime.datetime.fromtimestamp(int(time.time()), tz).strftime('%Y-%m-%d') + ')',
-                                "cover": self.parse_alert(alert_name)["icon"],
-                                "description": self.parse_alert(alert_name)["description"],
-                                "alertName": alert_name
+                                "cover": self.parse_alert(alert_name[1])["icon"],
+                                "description": self.parse_alert(alert_name[1])["description"],
+                                "alertName": alert_name[1]
                             })
 
     def check(self, timestamp):
