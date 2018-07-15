@@ -218,35 +218,37 @@ class CMAAlertSpider(spider.Spider):
                         alert_name = re.search('发布(.+)预警', item.attrs['title'])
                         if alert_name is None:
                             continue
+                        alert_name = alert_name.group(1)
                         self.record(3, {
                             "title": "CMA·全国级预警速报",
                             "link": 'http://www.nmc.cn' + item.attrs['href'],
                             "content": item.attrs['title'] + '(' + datetime.datetime.fromtimestamp(int(time.time()), tz).strftime('%Y-%m-%d') + ')',
-                            "cover": self.parse_alert(alert_name[1])["icon"],
-                            "description": self.parse_alert(alert_name[1])["description"],
-                            "alertName": alert_name[1]
+                            "cover": self.parse_alert(alert_name)["icon"],
+                            "description": self.parse_alert(alert_name)["description"],
+                            "alertName": alert_name
                         })
                     if '橙色' in item.attrs['title'] or '红色' in item.attrs['title']:
                         alert_name = re.search('发布(.+)预警', item.attrs['title'])
                         if alert_name is None:
                             continue
+                        alert_name = alert_name.group(1)
                         if '解除' in item.attrs['title']:
                             self.record(3, {
                                 "title": "CMA·全国级预警速报",
                                 "link": "http://www.nmc.cn" + item.attrs['href'],
                                 "content": item.attrs['title'] + '(' + datetime.datetime.fromtimestamp(int(time.time()), tz).strftime('%Y-%m-%d') + ')',
-                                "cover": self.parse_alert(alert_name[1])["icon"],
-                                "description": self.parse_alert(alert_name[1])["description"],
-                                "alertName": alert_name[1]
+                                "cover": self.parse_alert(alert_name)["icon"],
+                                "description": self.parse_alert(alert_name)["description"],
+                                "alertName": alert_name
                             })
                         else:
                             self.record(4, {
                                 "title": "CMA·全国级预警速报",
                                 "link": "http://www.nmc.cn" + item.attrs['href'],
                                 "content": item.attrs['title'] + '(' + datetime.datetime.fromtimestamp(int(time.time()), tz).strftime('%Y-%m-%d') + ')',
-                                "cover": self.parse_alert(alert_name[1])["icon"],
-                                "description": self.parse_alert(alert_name[1])["description"],
-                                "alertName": alert_name[1]
+                                "cover": self.parse_alert(alert_name)["icon"],
+                                "description": self.parse_alert(alert_name)["description"],
+                                "alertName": alert_name
                             })
 
     def check(self, timestamp):
