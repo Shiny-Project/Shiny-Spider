@@ -33,6 +33,7 @@ class TwitterSpider(spider.Spider):
         # 将待监控的twitter id增加在下面
         self.process(api, "LoveLive_staff") #LL
         self.process(api, "wakeupgirls_PR") #wug
+        self.process(api, "iwakura_azusa") # 岩仓梓
 
     def process(self, api, name, count=5):
         status = api.user_timeline(name, count=count)
