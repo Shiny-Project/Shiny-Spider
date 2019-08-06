@@ -37,11 +37,11 @@ class TwitterSpider(spider.Spider):
         self.process(api, "minazou_373") # 美海
 
     def process(self, api, name, count=5):
-        status = api.user_timeline(name, count=count)
+        status = api.user_timeline(name, count=count, tweet_mode="extended")
         events = []
         for tweet in status:
             id = tweet.id
-            text = tweet.text
+            text = tweet.full_text
             user = tweet.author.screen_name
             name = tweet.author.name
             profile_image = tweet.author.profile_image_url_https
@@ -54,6 +54,19 @@ class TwitterSpider(spider.Spider):
 
             if media_type == "photo":
                 text = text + ('<img src="%s">' % (media,))
+
+            if hasattr(tweet, 'quoted_status'):
+                text += '\n\n===================\n'
+                text += tweet.quoted_status.author.name + ':\n'
+                text += tweet.quoted_status.full_text
+
+                if hasattr(tweet.quoted_status, 'extended_entities'):
+                    quoted_medias = tweet.quoted_status.extended_entities['media'][0]
+                    quoted_media = quoted_medias['media_url_https']
+                    quoted_media_type = quoted_medias['type']
+                    
+                if quoted_media_type == "photo":
+                    text += ('<img src="%s">' % (quoted_media,))
 
             json_data = {
                 "title" : "【%s】正在发推" % (name,),
