@@ -48,12 +48,13 @@ class TwitterSpider(spider.Spider):
             media_type = ""
             media = ""
             if hasattr(tweet, 'extended_entities'):
-                medias = tweet.extended_entities['media'][0]
-                media = medias['media_url_https']
-                media_type = medias['type']
+                medias = tweet.extended_entities['media']
+                for media in medias:
+                    mediaurl = media['media_url_https']
+                    media_type = media['type']
 
-            if media_type == "photo":
-                text = text + ('<img src="%s">' % (media,))
+                    if media_type == "photo":
+                        text = text + ('<img src="%s">' % (mediaurl,))
 
             if hasattr(tweet, 'quoted_status'):
                 text += '\n\n===================\n'
@@ -62,11 +63,12 @@ class TwitterSpider(spider.Spider):
 
                 if hasattr(tweet.quoted_status, 'extended_entities'):
                     quoted_medias = tweet.quoted_status.extended_entities['media'][0]
-                    quoted_media = quoted_medias['media_url_https']
-                    quoted_media_type = quoted_medias['type']
-                    
-                if quoted_media_type == "photo":
-                    text += ('<img src="%s">' % (quoted_media,))
+                    for media in quoted_medias:
+                        mediaurl = media['media_url_https']
+                        media_type = media['type']
+
+                        if media_type == "photo":
+                            text += ('<img src="%s">' % (mediaurl,))
 
             json_data = {
                 "title" : "【%s】正在发推" % (name,),
