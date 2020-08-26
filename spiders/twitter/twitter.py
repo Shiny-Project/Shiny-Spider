@@ -62,7 +62,7 @@ class TwitterSpider(spider.Spider):
                 text += tweet.quoted_status.full_text
 
                 if hasattr(tweet.quoted_status, 'extended_entities'):
-                    quoted_medias = tweet.quoted_status.extended_entities['media'][0]
+                    quoted_medias = tweet.quoted_status.extended_entities['media']
                     for media in quoted_medias:
                         mediaurl = media['media_url_https']
                         media_type = media['type']
