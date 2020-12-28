@@ -209,47 +209,50 @@ class CMAAlertSpider(spider.Spider):
     def main(self):
         result = self.fetch("http://www.nmc.cn/").decode('utf-8')
         soup = BeautifulSoup(result)
-        warning_list = soup.find_all('li', class_='waring')
+        warning_list = soup.select('div.alarm')
+        print(warning_list)
         tz = pytz.timezone('Asia/Shanghai')
         if len(warning_list) > 0:
-            if len(soup.find_all('li', class_='waring')) > 0:
-                for item in soup.find_all('li', class_='waring')[0].find_all('a'):
-                    if '蓝色' in item.attrs['title'] or '黄色' in item.attrs['title']:
-                        alert_name = re.search('发布(.+)预警', item.attrs['title'])
-                        if alert_name is None:
-                            continue
-                        alert_name = alert_name.group(1)
+            for item in warning_list:
+                warning_desc = item.select('.data-desc')[0]
+                warning_title = warning_desc.get_text()[2:]
+                warning_url = 'http://www.nmc.cn' + item.select('a')[0].attrs['href']
+                if '蓝色' in warning_title or '黄色' in warning_title:
+                    alert_name = re.search('发布(.+)预警', warning_title)
+                    if alert_name is None:
+                        continue
+                    alert_name = alert_name.group(1)
+                    self.record(3, {
+                        "title": "CMA·全国级预警速报",
+                        "link": warning_url,
+                        "content": warning_title + '(' + datetime.datetime.fromtimestamp(int(time.time()), tz).strftime('%Y-%m-%d') + ')',
+                        "cover": self.parse_alert(alert_name)["icon"],
+                        "description": self.parse_alert(alert_name)["description"],
+                        "alertName": alert_name
+                    })
+                if '橙色' in warning_title or '红色' in warning_title:
+                    alert_name = re.search('发布(.+)预警', warning_title)
+                    if alert_name is None:
+                        continue
+                    alert_name = alert_name.group(1)
+                    if '解除' in warning_title:
                         self.record(3, {
                             "title": "CMA·全国级预警速报",
-                            "link": 'http://www.nmc.cn' + item.attrs['href'],
-                            "content": item.attrs['title'] + '(' + datetime.datetime.fromtimestamp(int(time.time()), tz).strftime('%Y-%m-%d') + ')',
+                            "link": warning_url,
+                            "content": warning_title + '(' + datetime.datetime.fromtimestamp(int(time.time()), tz).strftime('%Y-%m-%d') + ')',
                             "cover": self.parse_alert(alert_name)["icon"],
                             "description": self.parse_alert(alert_name)["description"],
                             "alertName": alert_name
                         })
-                    if '橙色' in item.attrs['title'] or '红色' in item.attrs['title']:
-                        alert_name = re.search('发布(.+)预警', item.attrs['title'])
-                        if alert_name is None:
-                            continue
-                        alert_name = alert_name.group(1)
-                        if '解除' in item.attrs['title']:
-                            self.record(3, {
-                                "title": "CMA·全国级预警速报",
-                                "link": "http://www.nmc.cn" + item.attrs['href'],
-                                "content": item.attrs['title'] + '(' + datetime.datetime.fromtimestamp(int(time.time()), tz).strftime('%Y-%m-%d') + ')',
-                                "cover": self.parse_alert(alert_name)["icon"],
-                                "description": self.parse_alert(alert_name)["description"],
-                                "alertName": alert_name
-                            })
-                        else:
-                            self.record(4, {
-                                "title": "CMA·全国级预警速报",
-                                "link": "http://www.nmc.cn" + item.attrs['href'],
-                                "content": item.attrs['title'] + '(' + datetime.datetime.fromtimestamp(int(time.time()), tz).strftime('%Y-%m-%d') + ')',
-                                "cover": self.parse_alert(alert_name)["icon"],
-                                "description": self.parse_alert(alert_name)["description"],
-                                "alertName": alert_name
-                            })
+                    else:
+                        self.record(4, {
+                            "title": "CMA·全国级预警速报",
+                            "link": warning_url,
+                            "content": warning_title + '(' + datetime.datetime.fromtimestamp(int(time.time()), tz).strftime('%Y-%m-%d') + ')',
+                            "cover": self.parse_alert(alert_name)["icon"],
+                            "description": self.parse_alert(alert_name)["description"],
+                            "alertName": alert_name
+                        })
 
     def check(self, timestamp):
         return self.check_expiration(timestamp, 180)

@@ -3,3 +3,6 @@ __pycache__
 /config.py
 /core/config.py
 /.vscode
+Lib/
+Scripts/
+pyvenv.cfg
