@@ -46,6 +46,7 @@ class TwitterSpider(spider.Spider):
             profile_image = tweet.author.profile_image_url_https
             media_type = ""
             media = ""
+            images = []
             if hasattr(tweet, 'extended_entities'):
                 medias = tweet.extended_entities['media']
                 for media in medias:
@@ -53,6 +54,7 @@ class TwitterSpider(spider.Spider):
                     media_type = media['type']
 
                     if media_type == "photo":
+                        images.append(mediaurl)
                         text = text + ('<img src="%s">' % (mediaurl,))
 
             if hasattr(tweet, 'quoted_status'):
@@ -67,6 +69,7 @@ class TwitterSpider(spider.Spider):
                         media_type = media['type']
 
                         if media_type == "photo":
+                            images.append(mediaurl)
                             text += ('<img src="%s">' % (mediaurl,))
 
             json_data = {
@@ -75,6 +78,7 @@ class TwitterSpider(spider.Spider):
                 "channel": name,
                 "link" : "https://twitter.com/%s/status/%s" % (user, id),
                 "cover" : profile_image,
+                "images": images,
             }
 
             events.append(json_data)
