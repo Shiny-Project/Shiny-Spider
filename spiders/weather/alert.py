@@ -14,7 +14,7 @@ class AlertSpider(spider.Spider):
         data = json.loads(result)
         for item in data["alertData"]:
             if ("杭州" in item["headline"] or "上海" in item["headline"] or "郑州" in item["headline"]) and ("县" not in item["headline"] and "区" not in item["headline"]):
-                if ("红色" in item["headline"]):
+                if ("红色" in item["headline"] and "发布" in item["headline"]):
                     self.record(4, {
                         "title": "中国·预警速报",
                         "content": item["headline"],
