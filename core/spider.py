@@ -20,6 +20,8 @@ class Spider():
     def __init__(self, info = {}):
         if 'identity' in info:
             self.identity = info['identity']
+        if 'effect' in info:
+            self.effect = info['effect']
 
     def fetch(self, url):
         Logger.debug(u'试图抓取页面 [ URL = ' + url + ' ]')
