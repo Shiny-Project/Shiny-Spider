@@ -210,7 +210,6 @@ class CMAAlertSpider(spider.Spider):
         result = self.fetch("http://www.nmc.cn/").decode('utf-8')
         soup = BeautifulSoup(result)
         warning_list = soup.select('div.alarm')
-        print(warning_list)
         tz = pytz.timezone('Asia/Shanghai')
         if len(warning_list) > 0:
             for item in warning_list:
