@@ -9,6 +9,9 @@ class AlertSpider(spider.Spider):
         super(AlertSpider, self).__init__(info)
         self.name = 'Alert'
         self.keywords = ['杭州', '上海', '郑州', '北京']
+        if 'effect' in self:
+            if 'temporaryWatchKeywords' in self.effect:
+                self.keywords.extend(self.effect['temporaryWatchKeywords'])
 
     def main(self):
         result = self.fetch("http://www.12379.cn/data/alarm_list_all.html?_=" + str(int(time.time())) ).decode("utf-8")
