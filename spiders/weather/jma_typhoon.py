@@ -11,7 +11,7 @@ class JMATyphoonSpider(spider.Spider):
     """Spider描述"""
     name = 'JMATyphoon'  # 声明Spider名
 
-    def __init__(self):
+    def __init__(self, info={}):
         super(JMATyphoonSpider, self).__init__()  # 仅修改类名，不要修改其他
 
     def parse_typhoon_info(self, data):
