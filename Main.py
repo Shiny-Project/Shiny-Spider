@@ -41,7 +41,6 @@ def renew_by_path(path, spider_name):
         else:
             Logger.error('Spider : [ ' + spider_name + ' ] 刷新失败: ' + str(e))
     except Exception as e:
-        print(e)
         Logger.error('Spider : [ ' + spider_name + ' ] 刷新失败: ' + str(e))
 
 
