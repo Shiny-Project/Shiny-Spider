@@ -16,6 +16,7 @@ class Spider():
     """抓取和处理数据"""
     name = 'Spider'
     identity = {}
+    effect = None
 
     def __init__(self, info = {}):
         if 'identity' in info:
