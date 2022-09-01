@@ -169,7 +169,7 @@ class JMATyphoonSpider(spider.Spider):
                         self.parse_typhoon_info(item)
                     )
 
-            self.record(1, {
+            self.record(3, {
                 "title": "台风消息",
                 "link": link,
                 "content": "台风 {} 当前位于 {}，中心气压 {} 百帕，近中心最大风力 {} 米每秒（十分钟平均），向 {} 方向以 {} 千米每小时速度移动".format(
