@@ -1,5 +1,5 @@
 beautifulsoup4==4.6.0
-requests==2.11.1
+requests==2.20.0
 Shiny_SDK==1.6.4
 Pillow==8.0.0
 aiohttp===3.7.3
