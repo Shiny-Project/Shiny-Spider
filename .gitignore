@@ -1,7 +1,5 @@
 /.idea
 __pycache__
-/config.py
-/core/config.py
 /.vscode
 Lib/
 Scripts/

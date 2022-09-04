@@ -11,3 +11,10 @@ mv ./core/config.py.example ./core/config.py
 # Edit config.py
 python Main.py ignite
 ```
+
+Or using docker
+
+```
+docker build -t shiny-spider .
+docker run -d --rm --name shiny-spider-node shiny-spider -e SHINY_API_KEY="" -e SHINY_API_SECRET_KEY="" -e SHINY_API_HOST=""
+```
