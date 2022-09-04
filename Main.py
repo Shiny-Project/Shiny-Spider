@@ -1,5 +1,6 @@
 import sys
 import time
+import os
 
 import core.database as database
 import core.meta as meta
@@ -61,6 +62,12 @@ def start_spiders():
 
 
 def main():
+    # check necessary env variables
+    if os.getenv('SHINY_API_KEY') is None:
+        raise Exception("Missing SHINY_API_KEY")
+    if os.getenv('SHINY_API_SECRET_KEY') is None:
+        raise Exception("Missing SHINY_API_SECRET_KEY")
+    
     # 初始化
     if len(sys.argv) == 1:
         # 如果是命令行调用 走下面的流程
