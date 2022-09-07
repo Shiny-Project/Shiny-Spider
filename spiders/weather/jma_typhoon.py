@@ -202,14 +202,13 @@ class JMATyphoonSpider(spider.Spider):
                         self.parse_typhoon_info(item)
                     )
 
-                self.record(3, {
-                    "title": "台风消息",
-                    "link": link,
-                    "content": self.generate_content(result),
-                    "cover": "",
-                    "typhoon_data": result,
-                })
-
+            self.record(3, {
+                "title": "台风消息",
+                "link": link,
+                "content": self.generate_content(result),
+                "cover": "",
+                "typhoon_data": result,
+            })
             break  # use first one
 
 
