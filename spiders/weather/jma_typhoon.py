@@ -143,6 +143,39 @@ class JMATyphoonSpider(spider.Spider):
 
         return result
 
+    def generate_content(self, data):
+        if data['current']['remark'] == '台風消滅（域外へ出る）':
+            return "台风 {} 移出管辖范围，这是关于 {} 的最后一次报告".format(data['current']['name_en'], data['current']['name_en'])
+        if data['current']['remark'] == '台風消滅（熱帯低気圧化）':
+            return "台风 {} 减弱为热带低压，当前位于 {}，这是关于 {} 的最后一次报告".format(data['current']['name_en'], data['current']['location'], data['current']['name_en'])
+        if data['current']['remark'] == '台風消滅（温帯低気圧化）':
+            return "台风 {} 变性为温带气旋，当前位于 {}，这是关于 {} 的最后一次报告".format(data['current']['name_en'], data['current']['location'], data['current']['name_en'])
+
+        current_location_text = ''
+
+        if data['current']['remark'] == '台風発生予想':
+            current_location_text = '一热带低压即将加强为台风，当前位于 {}，'.format(
+                data['current']['name_en'], data['current']['location'])
+        elif data['current']['remark'] == '台風発生':
+            current_location_text = '台风 {} 现已被命名，当前位于 {}，'.format(
+                data['current']['name_en'], data['current']['location'])
+        else:
+            current_location_text = '台风 {} 当前位于 {}，'.format(
+                data['current']['name_en'], data['current']['location'])
+
+        current_status_text = '中心气压 {} 百帕，近中心最大风力 {} 米每秒（十分钟平均），'.format(
+            data['current']['pressure'], data['current']['near_center_wind_speed'])
+
+        current_movement_text = ''
+
+        if data['current']['direction'] == '' or data['current']['move_speed'] == '':
+            current_movement_text = '在原地停滞少动。'
+        else:
+            current_movement_text = '正向 {} 方向以 {} 千米每小时速度移动。'.format(
+                data['current']['direction'], data['current']['move_speed'])
+
+        return '{}{}{}'.format(current_location_text, current_status_text, current_movement_text)
+
     def main(self):
         """在这里执行你的主抓取逻辑"""
         url = 'https://www.data.jma.go.jp/developer/xml/feed/extra.xml'
@@ -169,18 +202,15 @@ class JMATyphoonSpider(spider.Spider):
                         self.parse_typhoon_info(item)
                     )
 
-            self.record(3, {
-                "title": "台风消息",
-                "link": link,
-                "content": "台风 {} 当前位于 {}，中心气压 {} 百帕，近中心最大风力 {} 米每秒（十分钟平均），向 {} 方向以 {} 千米每小时速度移动".format(
-                    result['current']['name_en'], result['current']['location'], result['current']['pressure'],
-                    result['current']['near_center_wind_speed'], result['current']['direction'], result['current']['move_speed']
-                ),
-                "cover": "",
-                "typhoon_data": result,
-            })
+                self.record(3, {
+                    "title": "台风消息",
+                    "link": link,
+                    "content": self.generate_content(result),
+                    "cover": "",
+                    "typhoon_data": result,
+                })
 
-            break # use first one
+            break  # use first one
 
 
 if __name__ == '__main__':
