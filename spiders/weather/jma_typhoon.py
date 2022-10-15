@@ -1,10 +1,18 @@
 # Common Header
-from turtle import distance
+from enum import Enum
 from bs4 import BeautifulSoup
 
 from core import spider
 from utils.helpers import get_text
-import json
+
+
+class TyphoonStatus(Enum):
+    NORMAL = 1  # 台风存续
+    MOVE_OUT = 2  # 移出管辖区域
+    WEAKEN_TO_TD = 3  # 减弱为热带低压
+    DEGENERATION = 4  # 变性为温带气旋
+    GALE_WARNING = 5  # 即将生成
+    NAMING = 6  # 台风命名
 
 
 class JMATyphoonSpider(spider.Spider):
@@ -18,6 +26,7 @@ class JMATyphoonSpider(spider.Spider):
         result = {}
         time = data.DateTime.get_text()
         result['time'] = time
+        result['status'] = TyphoonStatus.NORMAL
         body_entries = data.Item.find_all(name='Kind')
         for entry in body_entries:
             type_name = entry.Property.Type.get_text()
@@ -30,6 +39,16 @@ class JMATyphoonSpider(spider.Spider):
                     entry, 'Property.TyphoonNamePart.Number')
                 result['remark'] = get_text(
                     entry, 'Property.TyphoonNamePart.Remark')
+                if result['remark'] == '台風消滅（域外へ出る）':
+                    result['status'] = TyphoonStatus.MOVE_OUT
+                if result['remark'] == '台風消滅（熱帯低気圧化）':
+                    result['status'] = TyphoonStatus.WEAKEN_TO_TD
+                if result['remark'] == '台風消滅（温帯低気圧化）':
+                    result['status'] = TyphoonStatus.DEGENERATION
+                if result['remark'] == '台風発生予想':
+                    result['status'] = TyphoonStatus.GALE_WARNING
+                if result['remark'] == '台風発生':
+                    result['status'] = TyphoonStatus.NAMING
             if type_name == '階級':
                 result['typhoon_class'] = get_text(
                     entry, 'Property.ClassPart.TyphoonClass')
