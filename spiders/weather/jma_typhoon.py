@@ -26,7 +26,7 @@ class JMATyphoonSpider(spider.Spider):
         result = {}
         time = data.DateTime.get_text()
         result['time'] = time
-        result['status'] = TyphoonStatus.NORMAL
+        result['status'] = TyphoonStatus.NORMAL.value
         body_entries = data.Item.find_all(name='Kind')
         for entry in body_entries:
             type_name = entry.Property.Type.get_text()
@@ -40,15 +40,15 @@ class JMATyphoonSpider(spider.Spider):
                 result['remark'] = get_text(
                     entry, 'Property.TyphoonNamePart.Remark')
                 if result['remark'] == '台風消滅（域外へ出る）':
-                    result['status'] = TyphoonStatus.MOVE_OUT
+                    result['status'] = TyphoonStatus.MOVE_OUT.value
                 if result['remark'] == '台風消滅（熱帯低気圧化）':
-                    result['status'] = TyphoonStatus.WEAKEN_TO_TD
+                    result['status'] = TyphoonStatus.WEAKEN_TO_TD.value
                 if result['remark'] == '台風消滅（温帯低気圧化）':
-                    result['status'] = TyphoonStatus.DEGENERATION
+                    result['status'] = TyphoonStatus.DEGENERATION.value
                 if result['remark'] == '台風発生予想':
-                    result['status'] = TyphoonStatus.GALE_WARNING
+                    result['status'] = TyphoonStatus.GALE_WARNING.value
                 if result['remark'] == '台風発生':
-                    result['status'] = TyphoonStatus.NAMING
+                    result['status'] = TyphoonStatus.NAMING.value
             if type_name == '階級':
                 result['typhoon_class'] = get_text(
                     entry, 'Property.ClassPart.TyphoonClass')
@@ -164,11 +164,11 @@ class JMATyphoonSpider(spider.Spider):
 
     def generate_content(self, data):
         if data['current']['remark'] == '台風消滅（域外へ出る）':
-            return "台风 {} 移出管辖范围，这是关于 {} 的最后一次报告".format(data['current']['name_en'], data['current']['name_en'])
+            return "台风 {} 移出管辖范围，这是关于 {} 的最后一次报告。".format(data['current']['name_en'], data['current']['name_en'])
         if data['current']['remark'] == '台風消滅（熱帯低気圧化）':
-            return "台风 {} 减弱为热带低压，当前位于 {}，这是关于 {} 的最后一次报告".format(data['current']['name_en'], data['current']['location'], data['current']['name_en'])
+            return "台风 {} 减弱为热带低压，当前位于 {}，这是关于 {} 的最后一次报告。".format(data['current']['name_en'], data['current']['location'], data['current']['name_en'])
         if data['current']['remark'] == '台風消滅（温帯低気圧化）':
-            return "台风 {} 变性为温带气旋，当前位于 {}，这是关于 {} 的最后一次报告".format(data['current']['name_en'], data['current']['location'], data['current']['name_en'])
+            return "台风 {} 变性为温带气旋，当前位于 {}，这是关于 {} 的最后一次报告。".format(data['current']['name_en'], data['current']['location'], data['current']['name_en'])
 
         current_location_text = ''
 
@@ -204,7 +204,7 @@ class JMATyphoonSpider(spider.Spider):
         typhoon_entry_links = []
 
         for entry in entries:
-            if 'VPTW60' in entry.id.get_text():
+            if 'VPTW60' in entry.id.get_text() or 'VPTW61' in entry.id.get_text() or 'VPTW62' in entry.id.get_text() or 'VPTW63' in entry.id.get_text() or 'VPTW64' in entry.id.get_text() or 'VPTW65' in entry.id.get_text():
                 typhoon_entry_links.append(entry.link.attrs['href'])
         for link in typhoon_entry_links:
             result = {}
