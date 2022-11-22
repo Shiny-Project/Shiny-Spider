@@ -1,7 +1,7 @@
 beautifulsoup4==4.6.0
 requests==2.20.0
 Shiny_SDK==1.6.4
-Pillow==9.0.1
+Pillow==9.3.0
 aiohttp===3.7.4
 tweepy===3.7.0
 pytz==2020.5
