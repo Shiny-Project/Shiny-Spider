@@ -19,18 +19,17 @@ class AlertSpider(spider.Spider):
         for item in data["alertData"]:
             for keyword in self.keywords:
                 if keyword in item["headline"] and ("县" not in item["headline"] and "区" not in item["headline"]):
-                    if ("红色" in item["headline"] and "发布" in item["headline"]):
-                        self.record(4, {
-                            "title": "中国·预警速报",
-                            "content": item["headline"],
-                            "link": "http://www.12379.cn/data/alarmcontent.shtml?file={}.html".format(item["identifier"])
-                        })
-                    else:
-                        self.record(3, {
-                            "title": "中国·预警速报",
-                            "content": item["headline"],
-                            "link": "http://www.12379.cn/data/alarmcontent.shtml?file={}.html".format(item["identifier"])
-                        })
+                    level = 4 if ("红色" in item["headline"] and "发布" in item["headline"]) else 3
+                    self.record(level, {
+                        "title": "中国·预警速报",
+                        "content": item["headline"],
+                        "link": "http://www.12379.cn/data/alarmcontent.shtml?file={}.html".format(item["identifier"]),
+                        "alert_data": {
+                            "description": item["description"],
+                            "title": item["headline"],
+                            "send_time": item["sendTime"],
+                        }
+                    })
 
     def check(self, timestamp):
         return self.check_expiration(timestamp, 180)
