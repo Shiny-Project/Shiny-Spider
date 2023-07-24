@@ -28,6 +28,7 @@ class AlertSpider(spider.Spider):
                             "description": item["description"],
                             "title": item["headline"],
                             "send_time": item["sendTime"],
+                            "identifier": item["identifier"]
                         }
                     })
 
