@@ -174,7 +174,7 @@ class JMATyphoonSpider(spider.Spider):
 
         if data['current']['remark'] == '台風発生予想':
             current_location_text = '一热带低压即将加强为台风，当前位于 {}，'.format(
-                data['current']['name_en'], data['current']['location'])
+                data['current']['location'])
         elif data['current']['remark'] == '台風発生':
             current_location_text = '台风 {} 现已被命名，当前位于 {}，'.format(
                 data['current']['name_en'], data['current']['location'])
