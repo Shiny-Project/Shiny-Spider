@@ -3,6 +3,7 @@ from enum import Enum
 from bs4 import BeautifulSoup
 
 from core import spider
+from core.jma import FEED_URL, fetch_xml
 from utils.helpers import get_text
 
 
@@ -197,8 +198,7 @@ class JMATyphoonSpider(spider.Spider):
 
     def main(self):
         """在这里执行你的主抓取逻辑"""
-        url = 'https://www.data.jma.go.jp/developer/xml/feed/extra.xml'
-        response = self.fetch(url)
+        response = fetch_xml(FEED_URL, self.fetch)
         html = BeautifulSoup(response, "xml", from_encoding="utf-8")
         entries = html.find_all(name="entry")
         typhoon_entry_links = []
@@ -209,8 +209,8 @@ class JMATyphoonSpider(spider.Spider):
         for link in typhoon_entry_links:
             result = {}
             result['estimations'] = []
-            typhoon_data = BeautifulSoup(self.fetch(
-                link), "xml", from_encoding="utf-8")
+            typhoon_data = BeautifulSoup(fetch_xml(
+                link, self.fetch), "xml", from_encoding="utf-8")
             info_item = typhoon_data.find_all(name="MeteorologicalInfo")
             for item in info_item:
                 item_type = item.DateTime.attrs['type']
