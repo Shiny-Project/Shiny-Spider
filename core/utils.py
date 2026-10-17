@@ -1,15 +1,12 @@
 # Shiny Helper Functions
 
-import importlib.util
+import importlib
 import time,datetime
 
 
 def load_spider(path):
-    # 面向StackOverflow编程抄来的代码 根据路径导入包
-    spec = importlib.util.spec_from_file_location("Mirai", './spiders/' + path + '.py')
-    spider = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(spider)
-    return spider
+    # 按模块路径加载并复用模块，保留爬虫跨轮调度的内存状态。
+    return importlib.import_module('spiders.' + path.replace('/', '.'))
 
 def parse_time_string(time_string):
     try:
