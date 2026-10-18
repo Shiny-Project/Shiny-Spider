@@ -29,7 +29,7 @@ class TwitterSpider(spider.Spider):
         auth = tweepy.OAuthHandler(self.CONSUMER_KEY, self.CONSUMER_SECRET)
         auth.set_access_token(self.ACCESS_TOKEN, self.ACCESS_SECRET)
 
-        api = tweepy.API(auth)
+        api = tweepy.API(auth, timeout=config.SPIDER_REQUEST_TIMEOUT)
         # 将待监控的twitter id增加在下面
         #self.process(api, "wakeupgirls_PR") #wug
         self.process(api, "iwakura_azusa") # 岩仓梓

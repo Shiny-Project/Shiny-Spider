@@ -7,7 +7,7 @@ from io import BytesIO
 import requests
 from PIL import Image
 
-from core import spider
+from core import config, spider
 from lxml import etree
 
 
@@ -29,7 +29,7 @@ class RadarSpider(spider.Spider):
         img_url = html_tree.xpath('//*[@id="imgpath"]/@src')[0]
 
         # 下载读取图片
-        img_response = requests.get(img_url, timeout=20).content
+        img_response = requests.get(img_url, timeout=config.SPIDER_REQUEST_TIMEOUT).content
         image = Image.open(BytesIO(img_response)).crop((0, 0, 560, 860)).getdata()
         width, height = image.size
         pixels = list(image)

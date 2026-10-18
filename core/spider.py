@@ -3,10 +3,10 @@
 from urllib import request
 import collections
 import core.database as database
-from core import utils
+from core import config, utils
 from core.log import Log
 import asyncio
-from aiohttp import ClientSession
+from aiohttp import ClientSession, ClientTimeout
 
 
 Logger = Log()
@@ -29,16 +29,18 @@ class Spider():
         req = request.Request(url)
         req.add_header(
             'User-Agent', 'Shiny/0.1 (https://github.com/Shiny-Project/Shiny-README)')
-        response = request.urlopen(req, timeout=10)
+        with request.urlopen(req, timeout=config.SPIDER_REQUEST_TIMEOUT) as response:
+            content = response.read()
         Logger.debug('抓取页面 [ URL = ' + url + ' ]成功')
-        return response.read()
+        return content
 
     async def generate_fetch_tasks(self, url, session):
         async with session.get(url) as response:
             return await response.text()
 
     async def do_fetch_tasks(self, urls):
-        async with ClientSession() as session:
+        timeout = ClientTimeout(total=config.SPIDER_REQUEST_TIMEOUT)
+        async with ClientSession(timeout=timeout) as session:
             tasks = []
             for i in urls:
                 Logger.debug(u'试图抓取页面 [ URL = ' + i + ' ]')
