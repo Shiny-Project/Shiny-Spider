@@ -195,14 +195,17 @@ class DownloadTests(unittest.TestCase):
         url = 'https://example.test/telegram.xml'
         with patch('core.jma.monotonic', side_effect=lambda: clock[0]):
             jma.fetch_xml(jma.FEED_URL, fetch)
+            jma.fetch_xml(jma.EQVOL_FEED_URL, fetch)
             jma.fetch_xml(url, fetch)
             clock[0] = 39
             jma.fetch_xml(jma.FEED_URL, fetch)
-            self.assertEqual(fetch.call_count, 2)
+            jma.fetch_xml(jma.EQVOL_FEED_URL, fetch)
+            self.assertEqual(fetch.call_count, 3)
             clock[0] = 40
             jma.fetch_xml(jma.FEED_URL, fetch)
+            jma.fetch_xml(jma.EQVOL_FEED_URL, fetch)
             jma.fetch_xml(url, fetch)
-            self.assertEqual(fetch.call_count, 3)
+            self.assertEqual(fetch.call_count, 5)
 
     def test_network_failures_and_invalid_xml_can_be_retried(self):
         fetch = Mock(side_effect=[OSError('network failed'), b'not xml', b'<Report />'])
