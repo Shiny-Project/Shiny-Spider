@@ -1,4 +1,4 @@
-from core import spider
+from core import config, spider
 import json
 import requests
 
@@ -34,7 +34,7 @@ class FloodSpider(spider.Spider):
             'http://www.hfc.gov.cn/warninfo.wrinfo/mapdata', data={
                 "wrtype": "洪水",
                 "wrlevel": "All"
-            }).text)
+            }, timeout=config.SPIDER_REQUEST_TIMEOUT).text)
         icon_map = {
             "蓝色": "https://shiny-push.oss-ap-southeast-1.aliyuncs.com/FLOOD_ALERT_BLUE.png",
             "黄色": "https://shiny-push.oss-ap-southeast-1.aliyuncs.com/FLOOD_ALERT_YELLOW.png",

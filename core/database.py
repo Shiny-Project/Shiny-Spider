@@ -3,11 +3,24 @@
 import hashlib
 import json
 
+import requests
+
 import core.config as config
 from core.log import Log
 from core import meta
 
 import Shiny
+from Shiny import shiny as shiny_sdk
+
+
+class _ShinySession(requests.Session):
+    def request(self, method, url, **kwargs):
+        kwargs.setdefault('timeout', config.SHINY_REQUEST_TIMEOUT)
+        return super().request(method, url, **kwargs)
+
+
+# SDK 1.6.4 没有 timeout 参数，仅替换其 HTTP 入口，不影响爬虫的 requests。
+shiny_sdk.requests = _ShinySession()
 
 # Shiny SDK
 shiny = Shiny.Shiny(config.API_KEY, config.API_SECRET_KEY, config.API_HOST, spider_version=meta.version)

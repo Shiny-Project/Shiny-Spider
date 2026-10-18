@@ -70,14 +70,15 @@ class JMATyphoonSpider(spider.Spider):
                     result['move_speed'] = node.get_text()
                 result['pressure'] = get_text(
                     entry, 'Property.CenterPart.Pressure')
-                node = entry.find(name='ProbabilityCircle')
+                node = entry.find(name='ProbabilityCircle', attrs={'type': '予報円'})
                 if node is not None:
-                    result['probability_circle'] = {}
-                    result['probability_circle']['base_point'] = get_text(
-                        entry, 'Property.CenterPart.ProbabilityCircle.BasePoint')
-                    node = entry.find(name='Radius', attrs={'unit': 'km'})
-                    if node is not None:
-                        result['probability_circle']['radius'] = node.get_text()
+                    base_point = node.find(name='BasePoint', attrs={'type': '中心位置（度）'})
+                    radius = node.find(name='Radius', attrs={'unit': 'km'})
+                    result['probability_circle'] = {
+                        'base_point': base_point.get_text() if base_point is not None else '',
+                    }
+                    if radius is not None:
+                        result['probability_circle']['radius'] = radius.get_text()
             if type_name == '風':
                 node = entry.find(name='WindSpeed', attrs={
                                   "type": "最大風速", "unit": "m/s"})
@@ -164,6 +165,9 @@ class JMATyphoonSpider(spider.Spider):
         return result
 
     def generate_content(self, data):
+        if data['current'].get('remark') == '台風発生の可能性が小さくなった':
+            return '位于 {} 的热带低压发展为台风的可能性已减小，这是关于该热带低压的最后一次报告。'.format(
+                data['current']['location'])
         if data['current']['remark'] == '台風消滅（域外へ出る）':
             return "台风 {} 移出管辖范围，这是关于 {} 的最后一次报告。".format(data['current']['name_en'], data['current']['name_en'])
         if data['current']['remark'] == '台風消滅（熱帯低気圧化）':
@@ -183,8 +187,15 @@ class JMATyphoonSpider(spider.Spider):
             current_location_text = '台风 {} 当前位于 {}，'.format(
                 data['current']['name_en'], data['current']['location'])
 
-        current_status_text = '中心气压 {} 百帕，近中心最大风力 {} 米每秒（十分钟平均），'.format(
-            data['current']['pressure'], data['current']['near_center_wind_speed'])
+        status_parts = []
+        if data['current'].get('pressure'):
+            status_parts.append('中心气压 {} 百帕'.format(data['current']['pressure']))
+        if data['current'].get('near_center_wind_speed'):
+            status_parts.append('近中心最大风力 {} 米每秒（十分钟平均）'.format(
+                data['current']['near_center_wind_speed']))
+        current_status_text = '，'.join(status_parts)
+        if current_status_text:
+            current_status_text += '，'
 
         current_movement_text = ''
 
