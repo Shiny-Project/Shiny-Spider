@@ -1,4 +1,4 @@
-"""两个 JMA 爬虫共用的 XML 下载缓存。"""
+"""JMA 爬虫共用的 XML 下载缓存。"""
 
 from collections import OrderedDict
 from threading import Lock
@@ -7,13 +7,14 @@ import xml.etree.ElementTree as ET
 
 
 FEED_URL = 'https://www.data.jma.go.jp/developer/xml/feed/extra.xml'
+EQVOL_FEED_URL = 'https://www.data.jma.go.jp/developer/xml/feed/eqvol.xml'
 _cache = OrderedDict()
 _lock = Lock()
 
 
 def fetch_xml(url, fetch):
     # Feed 每分钟更新；带唯一文件名的电文在 feed 存续期间无需重复下载。
-    ttl = 40 if url == FEED_URL else 3600
+    ttl = 40 if url in (FEED_URL, EQVOL_FEED_URL) else 3600
     with _lock:
         cached = _cache.get(url)
         if cached is not None and cached[0] > monotonic():
