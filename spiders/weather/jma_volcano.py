@@ -1,6 +1,5 @@
 """将 JMA VFVO50 喷火警报、预报电文转换为火山事件。"""
 
-from collections import OrderedDict
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 import hashlib
@@ -30,7 +29,6 @@ SECTION_KINDS = {
     AREA_TYPE: {'01', '02', '03', '04', '05'},
     RESPONSE_TYPE: {str(code) for code in range(41, 50)},
 }
-_previous_reports = OrderedDict()
 
 
 def parse_xml(data):
@@ -113,45 +111,52 @@ def read_report(data):
         'warning': warning, 'name': name, 'event_id': event_id,
         'time': datetime.fromisoformat(root.findtext('Control/DateTime', '').replace('Z', '+00:00')),
         'report_time': root.findtext('Head/ReportDateTime', ''),
+        'serial': root.findtext('Head/Serial', '').strip(),
         'headline': root.findtext('Body/VolcanoInfoContent/VolcanoHeadline', '').strip()
                     or root.findtext('Head/Headline/Text', '').strip(),
         'prevention': root.findtext('Body/VolcanoInfoContent/VolcanoPrevention', '').strip(),
-        'key': (event_id, status),
+        'text': root.findtext('Body/Text', '').strip() if info_type == '取消' else '',
     }
 
 
-def make_event(report, link, previous=None):
+def make_event(report, link):
     warning = deepcopy(report['warning'])
     name = report['name']
-    if 'volcano' not in warning:
-        if previous is None:
-            raise ValueError('取消电文缺少目标火山状态，且没有可用的先前电文：' + report['event_id'])
-        warning = deepcopy(previous['warning'])
-        warning.update(status=report['warning']['status'], infoType='取消')
-        name = previous['name']
-    kind = warning['volcano']['kind']
+    kind = warning.get('volcano', {}).get('kind')
     cancelled = warning['infoType'] == '取消'
-    if kind in FORECAST_KINDS:
+    if kind is None:
+        title = '喷火情报'
+    elif kind in FORECAST_KINDS:
         title = '喷火预报'
         if not cancelled and any(area['kind'] == '04' for area in warning['areas']):
             title += ' · 警报解除'
     else:
         title = '喷火特别警报' if kind in SPECIAL_KINDS else '喷火警报'
-    title = name + ' ' + title
+    title = (name or '火山 ' + report['event_id']) + ' ' + title
     if warning['infoType'] in ('訂正', '取消'):
         title += '（' + {'訂正': '订正', '取消': '电文取消'}[warning['infoType']] + '）'
     if warning['status'] != '通常':
         title = {'訓練': '【训练】', '試験': '【试验】'}[warning['status']] + title
     issued = report['time'].astimezone(timezone(timedelta(hours=9))).strftime('%Y/%m/%d %H:%M')
-    lines = [title, ('原电文状态：' if cancelled else '') + KINDS[kind],
-             '气象厅 {} 发布（日本时间）'.format(issued)]
-    lines.extend(text for text in (report['headline'], report['prevention']) if text)
+    lines = [title]
+    if kind is not None:
+        lines.append(('原电文状态：' if cancelled else '') + KINDS[kind])
+    lines.append('气象厅 {} 发布（日本时间）'.format(issued))
+    lines.extend(text for text in (report['headline'], report['prevention'], report['text']) if text)
     identity = [report['event_id'], report['time'].isoformat(), report['report_time'],
                 warning, report['headline'], report['prevention']]
+    if report['text']:
+        identity.append(report['text'])
     digest = hashlib.sha256(json.dumps(identity, sort_keys=True, ensure_ascii=False).encode('utf-8')).hexdigest()
     return {
         'title': title, 'content': '\n'.join(lines), 'link': link,
         'warning': warning, 'hash': 'jma_volcano_' + digest,
+        'volcano_data': {
+            'code': report['event_id'], 'name': name, 'time': report['time'].isoformat(),
+            'reportTime': report['report_time'], 'serial': report['serial'],
+            'warning': deepcopy(warning), 'headline': report['headline'],
+            'prevention': report['prevention'], 'text': report['text'],
+        },
     }
 
 
@@ -163,21 +168,9 @@ def events(fetch):
         except Exception as error:
             failures.append('{}: {}'.format(url, error))
     emitted = set()
-    for url, report in sorted(reports, key=lambda item: item[1]['time']):
-        previous = _previous_reports.get(report['key'])
-        if previous is not None and previous['time'] > report['time']:
-            previous = None
-        try:
-            event = make_event(report, url, previous)
-        except ValueError as error:
-            failures.append('{}: {}'.format(url, error))
-            continue
-        if report['warning']['infoType'] != '取消' and (
-                report['key'] not in _previous_reports or previous is not None):
-            _previous_reports[report['key']] = report
-            _previous_reports.move_to_end(report['key'])
-            while len(_previous_reports) > 256:
-                _previous_reports.popitem(last=False)
+    order = {'発表': 0, '訂正': 1, '取消': 2}
+    for url, report in sorted(reports, key=lambda item: (item[1]['time'], order[item[1]['warning']['infoType']])):
+        event = make_event(report, url)
         if event['hash'] not in emitted:
             emitted.add(event['hash'])
             yield event
@@ -192,5 +185,6 @@ class JMAVolcanoSpider(spider.Spider):
     def main(self):
         for event in events(self.fetch):
             warning = event['warning']
-            routine = warning['status'] != '通常' or warning['volcano']['kind'] in FORECAST_KINDS
+            kind = warning.get('volcano', {}).get('kind')
+            routine = warning['status'] != '通常' or kind is None or kind in FORECAST_KINDS
             self.record(3 if routine else 4, event)

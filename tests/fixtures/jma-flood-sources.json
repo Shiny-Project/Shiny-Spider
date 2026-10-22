@@ -1,0 +1,76 @@
+{
+  "sourceUrl": "https://xml.kishou.go.jp/jmaxml_20260917_Samples.zip",
+  "testSourceUrl": "https://www.jma.go.jp/jma/kishou/know/bosai/keiho-update2026/tech-info/zip/20260407_shiteikasen_test.zip",
+  "samples": [
+    {
+      "file": "16_08_01_260312_VXKOii.xml",
+      "sha256": "1d2d6ddcd89db077d43952d9bd5d54ec2311f276a2f9fb489cf0dd793581b617",
+      "kind": "20"
+    },
+    {
+      "file": "16_08_02_260312_VXKOii.xml",
+      "sha256": "f4df7c55c8c52fe1244b12eb66b3026f0029fc4e5538b3a60c8d4b0ba2a528e3",
+      "kind": "20"
+    },
+    {
+      "file": "16_09_01_260312_VXKOii.xml",
+      "sha256": "4274836e1c04ab8aee2f9568c419778ed18da608815ebd77965d591410d15847",
+      "kind": "30"
+    },
+    {
+      "file": "16_09_02_260312_VXKOii.xml",
+      "sha256": "088933cca6a37a123d3ef4b95c97d50e9a1b939658485b6a4cd812d994bb0e37",
+      "kind": "31"
+    },
+    {
+      "file": "16_10_01_260312_VXKOii.xml",
+      "sha256": "360d76d1c1996a2e38240547cf0eddbb70594ab94813ebd492023182ad3dc7e2",
+      "kind": "40"
+    },
+    {
+      "file": "16_10_02_260312_VXKOii.xml",
+      "sha256": "d9dd1c7287c3d395573789e010769f8b29d6ed9826cb34d17ec7dd62f6828fe6",
+      "kind": "41"
+    },
+    {
+      "file": "16_11_01_260312_VXKOii.xml",
+      "sha256": "f113e3339722d9e91297a65627bf97141b478c6358005095e55c0f8e05937613",
+      "kind": "51"
+    },
+    {
+      "file": "16_11_02_260312_VXKOii.xml",
+      "sha256": "439232867880d26d48145f7c4c162dcbe89a85cf1017641579573741de08c716",
+      "kind": "51"
+    },
+    {
+      "file": "16_11_03_260312_VXKOii.xml",
+      "sha256": "19d8bcb9c5905eb8cbd965aec1d753bab92a22b37622d96a446c056be619fed6",
+      "kind": "51"
+    },
+    {
+      "file": "16_12_01_260312_VXKOii.xml",
+      "sha256": "a99ba5e57ef1a46cbedab7f6d7fbf01b3f7cfd1ddc15dbaabae27112b933c7c0",
+      "kind": "53"
+    },
+    {
+      "file": "16_13_01_251222_VXKOii.xml",
+      "sha256": "09856dc7ef83ba42376cd9c140c7095715beed0c82d5327b258e31cb402fb4c7",
+      "kind": "30"
+    },
+    {
+      "file": "16_14_01_251222_VXKOii.xml",
+      "sha256": "b09e982197dfece1f872e053271f4e32a96e50246258d0087e27f99c68d97fa2",
+      "kind": "10"
+    },
+    {
+      "file": "flood-downgraded.xml",
+      "sha256": "c378d6c26f714b1d05b14190354e015ba71b339d1770bfd90db0158faeb97c9c",
+      "kind": "22"
+    },
+    {
+      "file": "flood-released-test.xml",
+      "sha256": "bd5c18e120aea76b40722895c70a06da0096725d588646d06b57d616198706b0",
+      "kind": "10"
+    }
+  ]
+}
