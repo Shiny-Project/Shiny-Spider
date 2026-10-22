@@ -8,7 +8,7 @@ import xml.etree.ElementTree as ET
 from core import jma
 from core.spider import Spider
 from core.utils import load_spider
-from spiders.weather import jma_eruption, jma_volcano
+from spiders.weather import jma_eruption
 from test_jma_ew import feed
 
 
@@ -140,7 +140,6 @@ class EruptionTests(unittest.TestCase):
             URL: (FIXTURES / SAMPLES[0]).read_bytes(),
             other_url: (FIXTURES / '45_01_01_200522_VFVO50.xml').read_bytes(),
         }
-        jma_volcano._previous_reports.clear()
         with patch.object(Spider, 'fetch', side_effect=files.__getitem__) as fetch, \
                 patch('core.database.create_event') as submit:
             load_spider('weather/jma_eruption').JMAEruptionSpider().main()

@@ -39,7 +39,6 @@ def xml(root):
 class VolcanoTests(unittest.TestCase):
     def setUp(self):
         jma._cache.clear()
-        jma_volcano._previous_reports.clear()
 
     def test_official_reports_keep_all_three_types_of_current_state_separate(self):
         results = [jma_volcano.make_event(jma_volcano.read_report(
@@ -85,7 +84,7 @@ class VolcanoTests(unittest.TestCase):
         self.assertIn('原电文状态', result['content'])
         self.assertNotIn('警报解除', result['title'])
 
-    def test_cancellation_keeps_prior_geometry_across_scheduler_polls(self):
+    def test_cancellation_is_submitted_without_inheriting_geometry_across_scheduler_polls(self):
         files = {
             jma.EQVOL_FEED_URL: feed([(ISSUE_URL, '1')]),
             ISSUE_URL: xml(report()),
@@ -103,8 +102,11 @@ class VolcanoTests(unittest.TestCase):
         issued, cancelled, repeated = [call.args for call in submit.call_args_list]
         self.assertEqual(issued[2], 'JMAVolcano')
         self.assertEqual(cancelled[1]['warning']['infoType'], '取消')
-        self.assertEqual(cancelled[1]['warning']['volcano'], issued[1]['warning']['volcano'])
-        self.assertEqual(cancelled[1]['warning']['areas'], issued[1]['warning']['areas'])
+        self.assertNotIn('volcano', cancelled[1]['warning'])
+        self.assertEqual(cancelled[1]['warning']['areas'], [])
+        self.assertEqual(cancelled[1]['warning']['responses'], [])
+        self.assertEqual(cancelled[1]['volcano_data']['code'], issued[1]['warning']['volcano']['code'])
+        self.assertEqual(cancelled[1]['volcano_data']['warning'], cancelled[1]['warning'])
         self.assertEqual(cancelled[3], repeated[3])
         self.assertNotEqual(issued[3], cancelled[3])
 
@@ -117,19 +119,34 @@ class VolcanoTests(unittest.TestCase):
         results = list(jma_volcano.events(files.__getitem__))
         self.assertEqual([item['warning']['infoType'] for item in results], ['発表', '取消'])
 
-    def test_unresolved_cancellation_fails_without_borrowing_training_or_future_state(self):
+    def test_cancellation_alone_needs_no_history_and_never_borrows_other_reports(self):
         cancellation = jma_volcano.read_report(xml(report(info_type='取消', body=False, headline=False)))
-        with self.assertRaisesRegex(ValueError, '没有可用的先前电文'):
-            jma_volcano.make_event(cancellation, CANCEL_URL)
+        original = jma_volcano.make_event(cancellation, CANCEL_URL)
+        self.assertNotIn('volcano', original['warning'])
+        self.assertIn('电文取消', original['title'])
+        self.assertIn('火山 306', original['title'])
+        files = {jma.EQVOL_FEED_URL: feed([(CANCEL_URL, '1')]),
+                 CANCEL_URL: xml(report(info_type='取消', body=False, headline=False))}
+        self.assertEqual(list(jma_volcano.events(files.__getitem__)), [original])
         for status, date in [('訓練', '2020-05-22T04:00:00Z'), ('通常', '2020-05-22T04:05:00Z')]:
             jma._cache.clear()
-            prior = jma_volcano.read_report(xml(report(status=status, date=date)))
-            jma_volcano._previous_reports.clear()
-            jma_volcano._previous_reports[prior['key']] = prior
-            files = {jma.EQVOL_FEED_URL: feed([(CANCEL_URL, '1')]),
+            files = {jma.EQVOL_FEED_URL: feed([(ISSUE_URL, '1'), (CANCEL_URL, '2')]),
+                     ISSUE_URL: xml(report(status=status, date=date)),
                      CANCEL_URL: xml(report(info_type='取消', body=False, headline=False))}
-            with self.assertRaisesRegex(RuntimeError, CANCEL_URL):
-                list(jma_volcano.events(files.__getitem__))
+            results = list(jma_volcano.events(files.__getitem__))
+            cancelled = next(item for item in results if item['warning']['infoType'] == '取消')
+            self.assertEqual(cancelled, original)
+
+    def test_cancellation_text_is_preserved_in_raw_data_and_hash(self):
+        root = report(info_type='取消', body=False, headline=False)
+        body = ET.SubElement(root, 'Body')
+        ET.SubElement(body, 'Text').text = '先ほどの電文を取り消します。'
+        result = jma_volcano.make_event(jma_volcano.read_report(xml(root)), CANCEL_URL)
+        self.assertEqual(result['volcano_data']['text'], '先ほどの電文を取り消します。')
+        self.assertIn('先ほどの電文を取り消します。', result['content'])
+        body.find('Text').text = '内容を修正します。'
+        changed = jma_volcano.make_event(jma_volcano.read_report(xml(root)), CANCEL_URL)
+        self.assertNotEqual(result['hash'], changed['hash'])
 
     def test_hash_is_stable_across_urls_and_item_order_but_preserves_revisions(self):
         base = jma_volcano.read_report(xml(report()))
