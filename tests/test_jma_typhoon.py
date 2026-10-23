@@ -13,6 +13,7 @@ FIXTURES = Path(__file__).parent / 'fixtures' / 'jma'
 # Unmodified official XML from xml.kishou.go.jp/jmaxml_20260917_Samples.zip.
 NORMAL = '10_04_03_170913_VPTW60.xml'
 ENDED = '10_05_05_200826_VPTW61.xml'
+ASYMMETRIC = '10_04_07_170916_VPTW60.xml'
 
 
 def read_sample(name):
@@ -34,6 +35,24 @@ class TyphoonTests(unittest.TestCase):
         level, data, publisher, event_hash = submit.call_args[0]
         self.assertEqual((level, publisher), (3, 'JMATyphoon'))
         return data
+
+    def test_official_asymmetric_wind_areas_survive_submission(self):
+        data = self.submit_sample(ASYMMETRIC)['typhoon_data']
+        self.assertEqual(len(data['estimations']), 1)
+        expected = {
+            'storm_wind_area': {
+                'wide_side': {'direction': '北東', 'radius': '200'},
+                'narrow_side': {'direction': '南西', 'radius': '130'},
+            },
+            'strong_wind_area': {
+                'wide_side': {'direction': '北東', 'radius': '560'},
+                'narrow_side': {'direction': '南西', 'radius': '440'},
+            },
+        }
+        for point in [data['current']] + data['estimations']:
+            for area, axes in expected.items():
+                with self.subTest(time=point['time'], area=area):
+                    self.assertEqual(point[area], axes)
 
     def test_official_forecast_centers_and_all_twelve_radii_survive_submission(self):
         data = self.submit_sample(NORMAL)

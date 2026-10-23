@@ -24,11 +24,13 @@ class Spider():
         if 'effect' in info:
             self.effect = info['effect']
 
-    def fetch(self, url):
+    def fetch(self, url, headers=None):
         Logger.debug(u'试图抓取页面 [ URL = ' + url + ' ]')
         req = request.Request(url)
         req.add_header(
             'User-Agent', 'Shiny/0.1 (https://github.com/Shiny-Project/Shiny-README)')
+        for name, value in (headers or {}).items():
+            req.add_header(name, value)
         with request.urlopen(req, timeout=config.SPIDER_REQUEST_TIMEOUT) as response:
             content = response.read()
         Logger.debug('抓取页面 [ URL = ' + url + ' ]成功')

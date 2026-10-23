@@ -121,7 +121,7 @@ class JMATyphoonSpider(spider.Spider):
                         radius_node = axes[1].find(
                             name='Radius', attrs={'unit': 'km'})
                         if radius_node is not None:
-                            result['storm_wind_area']['wide_side'] = {
+                            result['storm_wind_area']['narrow_side'] = {
                                 'direction': get_text(axes[1], 'Direction'),
                                 'radius': radius_node.get_text()
                             }
