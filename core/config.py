@@ -6,3 +6,5 @@ API_HOST = os.getenv('SHINY_API_HOST', 'https://shiny.kotori.moe')
 
 SHINY_REQUEST_TIMEOUT = 10
 SPIDER_REQUEST_TIMEOUT = 30
+
+SPIDER_CONCURRENCY = 4

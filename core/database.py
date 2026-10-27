@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+from threading import local
 
 import requests
 
@@ -13,13 +14,22 @@ import Shiny
 from Shiny import shiny as shiny_sdk
 
 
-class _ShinySession(requests.Session):
+class _ShinySession(local):
+    def __init__(self):
+        self.session = requests.Session()
+
     def request(self, method, url, **kwargs):
         kwargs.setdefault('timeout', config.SHINY_REQUEST_TIMEOUT)
-        return super().request(method, url, **kwargs)
+        return self.session.request(method, url, **kwargs)
+
+    def get(self, url, **kwargs):
+        return self.request('GET', url, **kwargs)
+
+    def post(self, url, data=None, **kwargs):
+        return self.request('POST', url, data=data, **kwargs)
 
 
-# SDK 1.6.4 没有 timeout 参数，仅替换其 HTTP 入口，不影响爬虫的 requests。
+# SDK 1.6.4 没有 timeout 参数；每个线程复用独立 Session，避免共享 Cookie 等状态。
 shiny_sdk.requests = _ShinySession()
 
 # Shiny SDK

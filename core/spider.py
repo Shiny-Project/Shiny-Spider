@@ -51,8 +51,8 @@ class Spider():
             return await asyncio.gather(*tasks)
 
     def fetch_many(self, urls):
-        loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.do_fetch_tasks(urls))
+        # 工作线程没有默认事件循环；每次调用创建并关闭自己的循环。
+        return asyncio.run(self.do_fetch_tasks(urls))
 
     def record(self, level, data):
         if 'hash' in data:

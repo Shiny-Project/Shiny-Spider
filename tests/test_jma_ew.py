@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from threading import Barrier
 import time
 import unittest
 from unittest.mock import Mock, patch
@@ -188,6 +189,18 @@ class DownloadTests(unittest.TestCase):
         fetch.assert_called_once_with(jma.FEED_URL)
         other_spider = Mock(side_effect=AssertionError('Second spider must reuse download'))
         self.assertEqual(jma.fetch_xml(jma.FEED_URL, other_spider), b'<Report />')
+
+    def test_different_urls_download_concurrently(self):
+        barrier = Barrier(2)
+
+        def download(url):
+            barrier.wait(timeout=5)
+            return b'<Report />'
+
+        urls = [jma.FEED_URL, jma.EQVOL_FEED_URL]
+        with ThreadPoolExecutor(2) as pool:
+            futures = [pool.submit(jma.fetch_xml, url, download) for url in urls]
+            self.assertEqual([future.result(timeout=5) for future in futures], [b'<Report />'] * 2)
 
     def test_feed_refreshes_after_40_seconds_while_telegram_stays_cached(self):
         clock = [0]

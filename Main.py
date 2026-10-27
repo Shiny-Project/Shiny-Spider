@@ -1,6 +1,7 @@
 import sys
 import time
 import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import core.database as database
 import core.meta as meta
@@ -50,15 +51,20 @@ def show_version():
 
 
 def start_spiders():
-    Logger.info('爬虫就绪')
-    while True:
-        job_list = database.get_job_list()
-        if job_list:
-            for job in job_list:
-                renew(job["id"], job["spider"], job["path"], info=job["info"])
-        else:
-            Logger.warning('当前任务列表为空')
-        time.sleep(15)
+    Logger.info('爬虫就绪，最大并发数：' + str(config.SPIDER_CONCURRENCY))
+    with ThreadPoolExecutor(max_workers=config.SPIDER_CONCURRENCY) as executor:
+        while True:
+            job_list = database.get_job_list()
+            if job_list:
+                futures = [executor.submit(
+                    renew, job["id"], job["spider"], job["path"], info=job["info"]
+                ) for job in job_list]
+                # 本批任务全部结束后再拉取下一批，避免同一爬虫跨轮重叠。
+                for future in as_completed(futures):
+                    future.result()
+            else:
+                Logger.warning('当前任务列表为空')
+            time.sleep(15)
 
 
 def main():
